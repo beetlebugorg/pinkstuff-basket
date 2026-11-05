@@ -1,0 +1,112 @@
+# Printdeck build of the desiccant basket: a collar, a basket and a lid for the bottom half of a
+# round West Marine -50F antifreeze gallon jug, and a cutting ring that cuts the jug with a razor blade.
+# The profiles in profiles/ are the Printdeck profiles of the TAZ Workhorse SE (0.5 mm nozzle).
+# All parts print in white PLA, to match the pellets, on 0.20 Standard, with no supports. The counts are for
+# 6 jugs. model.py writes the STL files in their print orientation.
+project: pinkstuff-basket
+cover: docs/hero-light.png
+
+generate:
+  python: "3.12"
+  install: pip install -r requirements.txt
+  run: python model.py
+  check: false
+
+parts:
+  - name: Cutting ring
+    group: Tools
+    description: >-
+      A ring on three legs. The jug stands in the ring, and the ring holds the blade cartridge level at 100 mm above
+      the table. Print it once, upside down, the ring top on the bed.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: skirt}
+    files: [stl/jig.stl]
+  - name: Blade cartridge
+    group: Tools
+    description: >-
+      Holds a single-edge razor blade. It slides on the shelf of the cutting ring, and the blade goes through the jug
+      wall. Print it on its back end.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: skirt}
+    files: [stl/jig_cart.stl]
+  - name: Lock pin
+    group: Tools
+    description: >-
+      Drops through the cartridge and the shelf. It locks the blade in the cartridge and the cartridge on the ring.
+      Print it cap down.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    settings: {wall_line_count: 2, infill_sparse_density: 100, adhesion_type: skirt}
+    files: [stl/jig_pin.stl]
+  - name: Fit test arc
+    group: Tools
+    description: >-
+      A 50 mm arc of the collar. Print it first. Push its groove over the cut edge. The edge must wedge in, and the arc
+      must follow the jug. The jug diameter is from a sample jug: see MEASURE.md. Print it top face down.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    settings: {wall_line_count: 3, infill_sparse_density: 40, adhesion_type: skirt}
+    files: [stl/fit_arc.stl]
+  - name: Collar
+    group: Desiccant basket
+    description: >-
+      The ring on the cut edge of the jug. A tapered groove grips the edge. A 45 deg seat holds the basket, and a ridge
+      on the skirt takes the lid snap. Print it upside down, top face on the bed.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    count: 6
+    settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: skirt}
+    files: [stl/collar.stl]
+  - name: Basket
+    group: Desiccant basket
+    description: >-
+      The basket for the pellets: 0.7 L, 40 mm deep, with a 1 mm wall, 254 side slots and 152 floor slots (2 mm), and two
+      floor ribs. Its flared rim sits on the seat of the collar. Print it floor down.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    count: 6
+    settings: {wall_line_count: 2, infill_sparse_density: 20, adhesion_type: skirt}
+    files: [stl/basket.stl]
+  - name: Lid
+    group: Desiccant basket
+    description: >-
+      The lid snaps over the ridge of the collar and clamps the collar onto the jug. 16 slits cut its skirt into
+      fingers. The plate sits on the basket rim. The air slots are 1.5 mm wide, so the pellets stay in. Pull the
+      tab to remove it. Print it upside down, top face on the bed.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.20-standard
+    material: roll-5
+    count: 6
+    settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: skirt}
+    files: [stl/lid.stl]
+
+docs:
+  - name: Build guide
+    file: pinkstuff-basket.pdf
+
+# The parts in their places, Z up (Z = 0 at the cut edge of the jug). The viewer removes the last item first.
+assemblies:
+  - name: Desiccant basket
+    description: >-
+      The collar on the cut jug, the basket in the collar, and the lid on top.
+    items:
+      - name: Jug (bottom half)
+        file: build/mesh/jug.stl
+        color: "#e9a3c0"
+      - part: Collar
+        file: build/mesh/collar.stl
+        explode: [0, 0, 1]
+      - part: Basket
+        file: build/mesh/basket.stl
+        explode: [0, 0, 2]
+      - part: Lid
+        file: build/mesh/lid.stl
+        explode: [0, 0, 3]

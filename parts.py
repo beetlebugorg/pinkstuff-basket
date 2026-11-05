@@ -1,0 +1,313 @@
+"""Desiccant basket: the printed parts and the context (the cut jug), in build123d.
+All parts are made in world coordinates (in use). model.py turns them to print orientation.
+A horizontal size is an offset o from the outer face of the jug (see shape.py)."""
+
+from build123d import (Align, Axis, Box, Circle, Plane, Polygon, Pos, Rectangle, Rot, Sketch, SlotOverall,
+                       extrude, loft)
+
+import shape as S
+
+
+def rr(o):
+    """The circle at offset o from the outer face of the jug."""
+    return Circle(S.JUG_DIA / 2 + o)
+
+
+def slab(o, z0, z1):
+    """A prism of the rounded square at offset o, from z0 to z1."""
+    return extrude(Pos(0, 0, z0) * rr(o), z1 - z0, dir=(0, 0, 1))
+
+
+def frustum(o0, z0, o1, z1):
+    """A loft from offset o0 at z0 to offset o1 at z1. Equal steps give 45 deg faces."""
+    return loft([Plane.XY.offset(z0) * rr(o0), Plane.XY.offset(z1) * rr(o1)])
+
+
+def inside(x, y, hw, hd, r):
+    """True if the point is inside the rounded rectangle 2hw x 2hd with corner radius r."""
+    dx, dy = abs(x) - (hw - r), abs(y) - (hd - r)
+    if dx <= 0 or dy <= 0:
+        return abs(x) <= hw and abs(y) <= hd
+    return dx * dx + dy * dy <= r * r
+
+
+def slots(o, width, z0, z1, keep_out=0.0):
+    """Rows of slots along X inside the circle at offset o, in a brick pattern.
+    keep_out: skip the slots that cross the ribs on the X and Y axes (half width)."""
+    hw = hd = r = S.JUG_DIA / 2 + o
+    faces, row = [], 0
+    pitch_x = S.SLOT_L + S.SLOT_GAP
+    y = -hd + width / 2
+    ys = []
+    n = int((2 * hd - width) // S.SLOT_PITCH)
+    y0 = -n * S.SLOT_PITCH / 2
+    ys = [y0 + i * S.SLOT_PITCH for i in range(n + 1)]
+    for row, y in enumerate(ys):
+        if keep_out and abs(y) < keep_out + width / 2 + 0.8:
+            continue
+        shift = pitch_x / 2 if row % 2 else 0.0
+        m = int(hw // pitch_x) + 2
+        for i in range(-m, m + 1):
+            x = i * pitch_x + shift
+            x0, x1 = x - S.SLOT_L / 2, x + S.SLOT_L / 2
+            if keep_out and x0 < keep_out + 0.8 and x1 > -keep_out - 0.8:
+                continue
+            ok = all(inside(px, py, hw, hd, r) for px in (x0, x1) for py in (y - width / 2, y + width / 2))
+            if ok:
+                faces.append(Pos(x, y) * SlotOverall(S.SLOT_L, width))
+    sk = Sketch() + faces
+    return extrude(Pos(0, 0, z0) * sk, z1 - z0, dir=(0, 0, 1)), len(faces)
+
+
+def v_ring(o_face, o_apex, zc):
+    """The solid inside a 45 deg V profile: offset o_face at zc +- h, o_apex at zc (h = o_face - o_apex)."""
+    h = o_face - o_apex
+    return frustum(o_face, zc - h, o_apex, zc) + frustum(o_apex, zc, o_face, zc + h)
+
+
+# --- Collar ---------------------------------------------------------------------------------
+
+def collar():
+    zg, g = S.SNAP_Z, S.SNAP_G
+    # The outer profile from the bottom up: the skirt, the snap groove, the ridge, the narrow band.
+    body = (slab(S.SKIRT_O, -S.SKIRT_H, zg - g)
+            + frustum(S.SKIRT_O, zg - g, S.SKIRT_O - g, zg)
+            + frustum(S.SKIRT_O - g, zg, S.SKIRT_O, zg + g)
+            + frustum(S.SKIRT_O, zg + g, S.BAND_O, zg + g + (S.SKIRT_O - S.BAND_O))
+            + slab(S.BAND_O, zg + g + (S.SKIRT_O - S.BAND_O), S.BAND_H))
+    m, hm, hr, z0 = S.G_MID, S.G_HALF_MOUTH, S.G_HALF_ROOF, -S.SKIRT_H
+    # Extend both faces 0.1 mm below the mouth, so the cut goes through the bottom face.
+    k = (hm - hr) / S.SKIRT_H * 0.1
+    groove = (frustum(m + hm + k, z0 - 0.1, m + hr, 0) - frustum(m - hm - k, z0 - 0.1, m - hr, 0))
+    body -= groove
+    body -= slab(S.A, -S.SKIRT_H - 1, 0.001)
+    body -= frustum(S.A, 0, S.A + S.CONE, S.CONE)
+    body -= slab(S.A + S.CONE, S.CONE - 0.001, S.BAND_H + 1)
+    # Finger notches at both X sides: a 45 deg V from the top of the band.
+    h = S.NOTCH_W / 2
+    tri = Polygon((-h, S.BAND_H + 0.01), (h, S.BAND_H + 0.01), (0, S.BAND_H - h), align=None)
+    notch = extrude(Plane.YZ * tri, S.JUG_W / 2 + 10, both=True)
+    body -= notch
+    return body
+
+
+def fit_arc():
+    """A short arc of the collar at +X, for the first print."""
+    c = collar()
+    box = Pos(S.JUG_DIA / 2 - 15, -S.FIT_SIZE / 2, -S.SKIRT_H - 1) * Box(
+        25, S.FIT_SIZE, S.SKIRT_H + S.BAND_H + 2, align=None)
+    return c & box
+
+
+# --- Basket ---------------------------------------------------------------------------------
+
+def rim_o():
+    """The outer face of the basket rim, above the flare."""
+    return S.A + S.CONE - S.RIM_CLR
+
+
+def wall_slots():
+    """The side slots of the basket: vertical, with a 45 deg pointed top. Return the cutter and the count."""
+    r = S.JUG_DIA / 2 + S.BASKET_O
+    n = int(2 * 3.14159265 * r // S.WSLOT_PITCH)
+    w, h = S.WSLOT_W, S.WSLOT_H
+    prof = Polygon((-w / 2, 0), (w / 2, 0), (w / 2, h), (0, h + w / 2), (-w / 2, h), align=None)
+    one = extrude(Plane.YZ * prof, S.BASKET_T + 2)       # along +X, through the wall
+    one = Pos(r - S.BASKET_T - 1, 0, 0) * one
+    cutters = []
+    for row in range(S.WSLOT_ROWS):
+        z = S.WSLOT_Z0 + row * (h + w / 2 + S.WSLOT_GAP)
+        shift = 0.5 if row % 2 else 0.0
+        for i in range(n):
+            cutters.append(Rot(0, 0, 360 / n * (i + shift)) * Pos(0, 0, z) * one)
+    from build123d import Compound
+    return Compound(children=cutters), n * S.WSLOT_ROWS
+
+
+def basket():
+    ro = rim_o()
+    t = S.BASKET_T
+    # The flare is on the cone of the collar: o = A + z. It starts at the basket wall.
+    z_a = S.BASKET_O - S.A
+    z_b = ro - S.A
+    outer = (slab(S.BASKET_O, -S.DEPTH, z_a)
+             + frustum(S.BASKET_O, z_a, ro, z_b)
+             + slab(ro, z_b, S.BAND_H))
+    # The inner face follows the flare, so the wall keeps its thickness.
+    inner = (slab(S.BASKET_IN, -S.DEPTH + S.FLOOR_T, z_a + 0.001)
+             + frustum(S.BASKET_IN, z_a, ro - t, z_b)
+             + slab(ro - t, z_b - 0.001, S.BAND_H + 1))
+    body = outer - inner
+    span = S.JUG_DIA + 2 * S.BASKET_IN + 0.5
+    zr = -S.DEPTH + S.FLOOR_T - 0.1
+    al = (Align.CENTER, Align.CENTER, Align.MIN)
+    ribs = Pos(0, 0, zr) * Box(span, S.RIB_T, S.RIB_H + 0.1, align=al) + Pos(0, 0, zr) * Box(S.RIB_T, span, S.RIB_H + 0.1, align=al)
+    body += ribs & slab(S.BASKET_IN + 0.2, -S.DEPTH, 0)
+    cut, n = slots(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, -S.DEPTH - 1, -S.DEPTH + S.FLOOR_T + 1, S.RIB_T / 2)
+    body -= cut
+    body -= wall_slots()[0]
+    return body
+
+
+def floor_slot_count():
+    return slots(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, 0, 1, S.RIB_T / 2)[1]
+
+
+# --- Lid ------------------------------------------------------------------------------------
+
+def lid():
+    top = S.BAND_H
+    body = slab(S.LID_O, top, top + S.LID_T)
+    body += slab(S.LID_O, S.LID_SKIRT_Z0, top + 0.01) - slab(S.LID_IN, S.LID_SKIRT_Z0 - 1, top + 0.001)
+    # The bead: the ring between the 45 deg V (apex BEAD_APEX at SNAP_Z) and the skirt face.
+    h = S.LID_IN - S.BEAD_APEX
+    bead = slab(S.LID_IN + 0.01, S.SNAP_Z - h, S.SNAP_Z + h) - v_ring(S.LID_IN, S.BEAD_APEX, S.SNAP_Z)
+    body += bead
+    # The pull tab at +Y: a 45 deg wedge at the bottom of the skirt.
+    y0 = S.JUG_D / 2 + S.LID_O - 0.2
+    z0 = S.LID_SKIRT_Z0
+    wedge = Polygon((y0, z0), (y0 + S.TAB_OUT + 0.2, z0), (y0, z0 + S.TAB_OUT + 0.2), align=None)
+    body += extrude(Plane.YZ * wedge, S.TAB_W / 2, both=True)
+    # Slits in the skirt, open at its bottom edge, between the tab and the next finger.
+    # The slits go from 1 mm inside the bead to outside the skirt.
+    r0 = S.JUG_DIA / 2 + S.BEAD_APEX - 1
+    length = S.LID_O - S.BEAD_APEX + 3
+    for i in range(S.SLITS):
+        a = 360 / S.SLITS * (i + 0.5)
+        cut = Pos(r0, 0, S.LID_SKIRT_Z0 - 1) * Box(length, S.SLIT_W, S.SLIT_TOP - S.LID_SKIRT_Z0 + 1,
+                                                   align=(Align.MIN, Align.CENTER, Align.MIN))
+        body -= Rot(0, 0, a) * cut
+    return _vents(body, top)
+
+
+def _vents(body, top):
+    cut, _ = slots(S.BASKET_IN - S.VENT_EDGE, S.VENT_SLOT, top - 1, top + S.LID_T + 1)
+    return body - cut
+
+
+def vent_slot_count():
+    return slots(S.BASKET_IN - S.VENT_EDGE, S.VENT_SLOT, 0, 1)[1]
+
+
+# --- Cutting collar -------------------------------------------------------------------------
+# The jug axis is the Z axis, Z = 0 on the table. The shelf and the cartridge are at +X.
+
+def jig_x():
+    """The X positions at Y = 0: the blade edge, the back of the spine, the pin, the cartridge ends."""
+    R = S.JUG_DIA / 2
+    ri = R + S.RING_CLR
+    edge = ri - S.BLADE_OUT
+    back = edge + S.BLADE_D
+    hd = (S.PIN_S + S.PIN_CLR) / 2 ** 0.5        # half the diagonal of the pin hole
+    pin = back + 0.05 + hd
+    return {"R": R, "ri": ri, "ro": ri + S.RING_T, "edge": edge, "back": back, "pin": pin, "hd": hd,
+            "out": pin + hd + 4.0, "top": S.CUT_H - S.CART_LOW}
+
+
+def diamond(side, z0, z1, x, y=0.0):
+    """A square prism, set at 45 deg about the Z axis (its corners on X and Y)."""
+    sq = Rot(0, 0, 45) * Rectangle(side, side)
+    return extrude(Pos(x, y, z0) * sq, z1 - z0, dir=(0, 0, 1))
+
+
+def box(x0, x1, y0, y1, z0, z1):
+    return Pos(x0, y0, z0) * Box(x1 - x0, y1 - y0, z1 - z0, align=None)
+
+
+def jig():
+    """The ring, the shelf and the three legs."""
+    k = jig_x()
+    zt = k["top"]
+    zb = zt - S.RING_H
+    body = extrude(Pos(0, 0, zb) * Circle(k["ro"]), S.RING_H)
+    body += box(k["R"], k["R"] + S.SHELF_L, -S.SHELF_W / 2, S.SHELF_W / 2, zt - S.SHELF_T, zt)
+    for a in (60, 180, 300):
+        x0 = k["ro"] - 1.0
+        leg = box(x0, x0 + S.LEG_T, -S.LEG_W / 2, S.LEG_W / 2, 0, zt)
+        leg += box(x0 + S.LEG_T - 0.1, x0 + S.LEG_T + S.LEG_FIN, -S.LEG_T / 2, S.LEG_T / 2, 0, zt)
+        body += Rot(0, 0, a) * leg
+    body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
+    body -= diamond(S.PIN_S + S.PIN_CLR, zt - S.SHELF_T - 1, zt + 1, k["pin"])
+    return body
+
+
+def cartridge():
+    """The blade cartridge, pushed in: it sits on the ring top and the shelf. The cheeks go down
+    beside the shelf. The blade slot and the spine pocket are open at the back end."""
+    k = jig_x()
+    zt = k["top"]
+    body = box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zt, zt + S.CART_H)
+    y0 = S.SHELF_W / 2 + S.CART_CLR
+    for sgn in (1, -1):
+        ya, yb = sorted((sgn * y0, sgn * (y0 + S.CHEEK_T)))
+        body += box(k["ro"] + 1.0, k["out"], ya, yb, zt - S.SHELF_T, zt + 0.01)
+    body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
+    hy = S.BLADE_L / 2 + 0.3
+    st = S.BLADE_T + S.SLOT_CLR
+    body -= box(k["R"] - 5, k["out"] + 1, -hy, hy, S.CUT_H - st / 2, S.CUT_H + st / 2)
+    # The spine pocket. Its front end is a 45 deg step, so it prints with no support.
+    pt = S.SPINE_T + S.SLOT_CLR + 0.15
+    x0, x1, h, d = k["back"] - S.SPINE_D - 0.05, k["out"] + 1, pt / 2, (pt - st) / 2
+    z = S.CUT_H
+    prof = Polygon((x0 - d, z - st / 2), (x0, z - h), (x1, z - h), (x1, z + h), (x0, z + h), (x0 - d, z + st / 2), align=None)
+    body -= extrude(Plane.XZ * prof, hy, both=True)
+    body -= diamond(S.PIN_S + S.PIN_CLR, zt - 1, zt + S.CART_H + 1, k["pin"])
+    return body
+
+
+def pin():
+    """The lock pin, in its hole: through the cartridge and the shelf, with a cap on top."""
+    k = jig_x()
+    zt = k["top"]
+    p = diamond(S.PIN_S, zt - S.SHELF_T - 2, zt + S.CART_H + 0.01, k["pin"])
+    return p + box(k["pin"] - 4, k["pin"] + 4, -4, 4, zt + S.CART_H, zt + S.CART_H + S.PIN_CAP)
+
+
+def blade():
+    """A single-edge razor blade in the cartridge, edge toward the jug, the spine on its stop."""
+    k = jig_x()
+    hy = S.BLADE_L / 2
+    b = box(k["edge"], k["back"] - S.SPINE_D, -hy, hy, S.CUT_H - S.BLADE_T / 2, S.CUT_H + S.BLADE_T / 2)
+    b += box(k["back"] - S.SPINE_D, k["back"], -hy, hy, S.CUT_H - S.SPINE_T / 2, S.CUT_H + S.SPINE_T / 2)
+    return b
+
+
+def jug_full():
+    """The full jug body before the cut (no shoulder, no handle)."""
+    return slab(0, 0, S.JUG_H) - slab(-S.JUG_T, S.JUG_FLOOR, S.JUG_H + 1)
+
+
+def Cylinder_(r, h):
+    return extrude(Circle(r), h)
+
+
+# --- Context --------------------------------------------------------------------------------
+
+def seat_depth(t=S.JUG_T):
+    """The depth below the roof of the groove where the groove is as wide as a wall of thickness t."""
+    return S.SKIRT_H * (t - 2 * S.G_HALF_ROOF) / (2 * S.G_HALF_MOUTH - 2 * S.G_HALF_ROOF)
+
+
+def wall_range():
+    """The thinnest and the thickest wall that seat in the groove. Keep 1 mm of the groove below the seat."""
+    w_roof, w_mouth = 2 * S.G_HALF_ROOF, 2 * S.G_HALF_MOUTH
+    return w_roof, w_mouth - (w_mouth - w_roof) / S.SKIRT_H
+
+
+def jug():
+    """The bottom half of the jug, cut at Z = 0, at its seat in the groove of the collar."""
+    z = -seat_depth()
+    return Pos(0, 0, z) * (slab(0, -S.CUT_H, 0) - slab(-S.JUG_T, -S.CUT_H + S.JUG_FLOOR, 1))
+
+
+def jug_inner_area():
+    """The inside area of the jug, mm2."""
+    return rr(-S.JUG_T).area
+
+
+def basket_inner_area():
+    return rr(S.BASKET_IN).area
+
+
+def wall_slot_count():
+    return wall_slots()[1]

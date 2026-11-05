@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Made by make.sh: the meshes, the images, the slices and the logs
+/build/
+/cura/profiles/
+
+# Node packages (npm ci in lineart/)
+node_modules/
