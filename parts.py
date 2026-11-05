@@ -23,38 +23,26 @@ def frustum(o0, z0, o1, z1):
     return loft([Plane.XY.offset(z0) * rr(o0), Plane.XY.offset(z1) * rr(o1)])
 
 
-def inside(x, y, hw, hd, r):
-    """True if the point is inside the rounded rectangle 2hw x 2hd with corner radius r."""
-    dx, dy = abs(x) - (hw - r), abs(y) - (hd - r)
-    if dx <= 0 or dy <= 0:
-        return abs(x) <= hw and abs(y) <= hd
-    return dx * dx + dy * dy <= r * r
-
-
-def slots(o, width, z0, z1, keep_out=0.0):
-    """Rows of slots along X inside the circle at offset o, in a brick pattern.
-    keep_out: skip the slots that cross the ribs on the X and Y axes (half width)."""
-    hw = hd = r = S.JUG_DIA / 2 + o
-    faces, row = [], 0
-    pitch_x = S.SLOT_L + S.SLOT_GAP
-    y = -hd + width / 2
-    ys = []
-    n = int((2 * hd - width) // S.SLOT_PITCH)
-    y0 = -n * S.SLOT_PITCH / 2
-    ys = [y0 + i * S.SLOT_PITCH for i in range(n + 1)]
-    for row, y in enumerate(ys):
-        if keep_out and abs(y) < keep_out + width / 2 + 0.8:
+def bars(o, width, z0, z1, keep_out):
+    """Long slots along X inside the circle at offset o: one row each SLOT_PITCH. The slots stop at
+    the cross ribs (X = 0 and X = +-CROSS_X, width keep_out * 2) and skip the rib at Y = 0. Long
+    straight bars print fast. Return the cutter and the count."""
+    r = S.JUG_DIA / 2 + o
+    cuts = [-S.CROSS_X, 0.0, S.CROSS_X]
+    faces = []
+    n = int((2 * r - width) // S.SLOT_PITCH)
+    for i in range(n + 1):
+        y = -n * S.SLOT_PITCH / 2 + i * S.SLOT_PITCH
+        if abs(y) < keep_out + width / 2 + 0.5:
             continue
-        shift = pitch_x / 2 if row % 2 else 0.0
-        m = int(hw // pitch_x) + 2
-        for i in range(-m, m + 1):
-            x = i * pitch_x + shift
-            x0, x1 = x - S.SLOT_L / 2, x + S.SLOT_L / 2
-            if keep_out and x0 < keep_out + 0.8 and x1 > -keep_out - 0.8:
-                continue
-            ok = all(inside(px, py, hw, hd, r) for px in (x0, x1) for py in (y - width / 2, y + width / 2))
-            if ok:
-                faces.append(Pos(x, y) * SlotOverall(S.SLOT_L, width))
+        yy = abs(y) + width / 2
+        if yy >= r:
+            continue
+        c = (r * r - yy * yy) ** 0.5
+        edges = [-c] + [e for x in cuts if -c < x < c for e in (x - keep_out, x + keep_out)] + [c]
+        for a, b in zip(edges[0::2], edges[1::2]):
+            if b - a >= 2 * width:
+                faces.append(Pos((a + b) / 2, y) * SlotOverall(b - a, width))
     sk = Sketch() + faces
     return extrude(Pos(0, 0, z0) * sk, z1 - z0, dir=(0, 0, 1)), len(faces)
 
@@ -141,16 +129,19 @@ def basket():
     span = S.JUG_DIA + 2 * S.BASKET_IN + 0.5
     zr = -S.DEPTH + S.FLOOR_T - 0.1
     al = (Align.CENTER, Align.CENTER, Align.MIN)
-    ribs = Pos(0, 0, zr) * Box(span, S.RIB_T, S.RIB_H + 0.1, align=al) + Pos(0, 0, zr) * Box(S.RIB_T, span, S.RIB_H + 0.1, align=al)
+    ribs = Pos(0, 0, zr) * Box(span, S.RIB_T, S.RIB_H + 0.1, align=al)
+    for x in (-S.CROSS_X, 0.0, S.CROSS_X):
+        ribs += Pos(x, 0, zr) * Box(S.RIB_T, span, S.RIB_H + 0.1, align=al)
     body += ribs & slab(S.BASKET_IN + 0.2, -S.DEPTH, 0)
-    cut, n = slots(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, -S.DEPTH - 1, -S.DEPTH + S.FLOOR_T + 1, S.RIB_T / 2)
+    cut, n = bars(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, -S.DEPTH - 1, -S.DEPTH + S.FLOOR_T + 1, S.RIB_T / 2)
     body -= cut
-    body -= wall_slots()[0]
+    if S.WSLOT_ROWS:
+        body -= wall_slots()[0]
     return body
 
 
 def floor_slot_count():
-    return slots(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, 0, 1, S.RIB_T / 2)[1]
+    return bars(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, 0, 1, S.RIB_T / 2)[1]
 
 
 # --- Lid ------------------------------------------------------------------------------------
@@ -181,12 +172,12 @@ def lid():
 
 
 def _vents(body, top):
-    cut, _ = slots(S.BASKET_IN - S.VENT_EDGE, S.VENT_SLOT, top - 1, top + S.LID_T + 1)
+    cut, _ = bars(S.BASKET_IN - S.VENT_EDGE, S.VENT_SLOT, top - 1, top + S.LID_T + 1, S.CROSS_W / 2)
     return body - cut
 
 
 def vent_slot_count():
-    return slots(S.BASKET_IN - S.VENT_EDGE, S.VENT_SLOT, 0, 1)[1]
+    return bars(S.BASKET_IN - S.VENT_EDGE, S.VENT_SLOT, 0, 1, S.CROSS_W / 2)[1]
 
 
 # --- Cutting collar -------------------------------------------------------------------------
@@ -310,4 +301,4 @@ def basket_inner_area():
 
 
 def wall_slot_count():
-    return wall_slots()[1]
+    return wall_slots()[1] if S.WSLOT_ROWS else 0

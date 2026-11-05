@@ -91,8 +91,10 @@ SETTINGS = [
                  "<code>python3 cura/make_profiles.py --install</code> with Cura closed, then pick “Desiccant - …”."),
     ("Material", "PLA, 2.85 mm, 0.5 mm nozzle. Calcium chloride brine does not attack PLA, PETG, or the HDPE jug. "
                  "Keep the brine away from metal."),
-    ("Layers", f"0.2 mm layers. Basket: {S.BASKET_T:.1f} mm walls (2 lines). Lid: {S.LID_SKIRT_T:.1f} mm skirt (2 lines). "
-               "20 to 40 % grid infill, skirt."),
+    ("Layers", f"0.3 mm layers (Printdeck profile pla-0.30-fast). Basket: {S.BASKET_T:.1f} mm wall (2 lines), "
+               f"{S.FLOOR_T:.1f} mm floor (3 layers). Lid: {S.LID_T:.1f} mm plate (3 layers). 20 to 40 % grid infill, skirt."),
+    ("Speed", "Faster walls for a functional part: outer wall 50 mm/s, inner walls 60 mm/s, top and bottom 60 mm/s, "
+              "first layer 25 mm/s, minimum layer time 6 s."),
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
     ("Tools", "One single-edge razor blade (1.5 × 0.75 in, with a folded spine), a flat table, and sandpaper (120 grit)."),
 ]
@@ -189,29 +191,27 @@ def cover():
 
 def print_page():
     rows = []
-    tg = tm = ts = 0
+    tg = ts = 0
     for name, colour, k, _ in PRINTS:
         p = SUMMARY["parts"][name]
-        g, m = FILAMENT[name]["grams"] * k, FILAMENT[name]["metres"] * k
-        tg += g
-        tm += m
-        s = FILAMENT[name]["seconds"] * k
-        ts += s
+        g1, s1 = FILAMENT[name]["grams"], FILAMENT[name]["seconds"]
+        tg += g1 * k
+        ts += s1 * k
         sx, sy, sz = p["size"]
-        rows.append(f'<tr><td><img class="thumb" src="{img("part_" + name)}"></td><td><code>stl/{name}.stl</code>{f" × {k}" if k > 1 else ""}</td>'
-                    f'<td><span class="sw" style="background:{SWATCH[colour]}"></span>{colour}</td>'
-                    f'<td class="n">{sx:.0f} × {sy:.0f} × {sz:.0f}</td><td class="n">{g:.0f} g</td><td class="n">{hm(s)}</td><td class="n">${cost(g):.2f}</td></tr>')
-    rows.append(f'<tr class="total"><td></td><td>Total</td><td></td><td></td><td class="n">{tg:.0f} g</td><td class="n">{hm(ts)}</td>'
+        rows.append(f'<tr><td><img class="thumb" src="{img("part_" + name)}"></td><td><code>stl/{name}.stl</code></td>'
+                    f'<td class="n">{sx:.0f} × {sy:.0f} × {sz:.0f}</td><td class="n">{g1:.0f} g</td><td class="n">{hm(s1)}</td>'
+                    f'<td class="n">{k}</td><td class="n">{g1 * k:.0f} g</td><td class="n">{hm(s1 * k)}</td><td class="n">${cost(g1 * k):.2f}</td></tr>')
+    rows.append(f'<tr class="total"><td></td><td>Total</td><td></td><td></td><td></td><td></td><td class="n">{tg:.0f} g</td><td class="n">{hm(ts)}</td>'
                 f'<td class="n">${cost(tg):.2f}</td></tr>')
     cards = "".join(f'<div class="card"><img src="{img("part_" + n)}"><b>{n.replace("_", " ")}</b>'
                     f'support check {SUPPORTS[n]:.0f} g<br>{t}</div>' for n, c, _, t in PRINTS)
     st = "".join(f"<tr><td>{k}</td><td>{v}</td></tr>" for k, v in SETTINGS)
     return f"""<section class="page">
   <h2>Printed parts</h2>
-  <table><tr><th></th><th>File</th><th>Colour</th><th class="n">Size on the bed (mm)</th><th class="n">Filament</th><th class="n">Print time</th><th class="n">Cost</th></tr>
+  <table><tr><th></th><th>File</th><th class="n">Size (mm)</th><th class="n">Each</th><th class="n">Time each</th><th class="n">Count</th><th class="n">Filament</th><th class="n">Time</th><th class="n">Cost</th></tr>
   {''.join(rows)}</table>
   <p style="font-size:9.5pt;color:#444">Filament and print time from the Printdeck slice: the Printdeck slicer with the TAZ Workhorse SE profile
-  (pla-0.20-standard, white PLA), the same slice as printdeck.beetlebug.org.
+  (pla-0.30-fast, faster walls, white PLA), the same slice as printdeck.beetlebug.org.
   Cost at ${PRICE_PER_KG:.2f}/kg. The counts are for {N_SETS} jugs.</p>
   <h2 style="margin-top:4mm">Print</h2>
   <p style="margin:1mm 0">The STL files are in their print orientation. Load them, do not turn them.</p>
@@ -258,9 +258,8 @@ def how_page(n):
   </div>
   <div class="fig"><img src="{img('section')}" style="max-height:90mm"></div>
   <p style="font-size:10pt;color:#444">The section through the middle. The basket holds {FIT['pellet_l']:.1f} L of pellets. The
-  space below the basket holds {FIT['brine_l']:.1f} L of brine (cut at {S.CUT_H:.0f} mm). Two ribs stiffen the floor.
-  The floor has {FIT['floor_slots']} slots and the wall has {FIT['wall_slots']} slots, all {S.FLOOR_SLOT:.0f} mm wide.
-  The wall slots let air reach the pellets and save filament. Their tops are pointed at 45°, so they print with no support.</p>
+  space below the basket holds {FIT['brine_l']:.1f} L of brine (cut at {S.CUT_H:.0f} mm). Four ribs stiffen the floor.
+  The floor has {FIT['floor_slots']} long slots, {S.FLOOR_SLOT:.0f} mm wide, between 1 mm bars. Long straight bars print fast.</p>
   {foot(n)}
 </section>"""
 

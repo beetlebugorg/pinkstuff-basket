@@ -15,12 +15,12 @@ The brine drips through the slots of the basket and collects in the jug.
   cartridge in, drop in the lock pin, and turn the jug. Each jug gets the same cut.
 - **Collar.** A tapered groove goes over the cut edge of the jug. The edge wedges into it.
   Walls from 0.6 to 2.4 mm fit. A 45° seat above the cut holds the basket.
-- **Basket.** 0.6 L of pellets, 40 mm tall. The flared rim sits on the seat. A 1 mm wall with
-  260 side slots and 158 floor slots, all 2 mm wide, and two floor ribs. The jug holds 1.1 L of
+- **Basket.** 0.6 L of pellets, 40 mm tall. The flared rim sits on the seat. A 1 mm wall, a
+  floor of long 2 mm slots between 1 mm bars, and four floor ribs. The jug holds 1.1 L of
   brine below it. Lift it out by the two finger notches in the collar.
 - **Lid.** A bead in the skirt snaps over a ridge on the collar. 16 slits cut the skirt into
   fingers (0.5 mm snap, 1.17 % strain in PLA). The skirt also clamps the collar onto the jug.
-  The plate sits on the basket rim. The air slots are 1.5 mm wide, so the pellets stay in.
+  The plate sits on the basket rim. The air slots are 2 mm wide, so the pellets stay in.
 - No supports, no hardware, no glue. White PLA, to match the pellets.
 
 `pinkstuff-basket.pdf` has the parts list, the print settings, and the steps.
@@ -59,18 +59,19 @@ The script stops if the fit check, the mesh check, or the support check fails. I
 ## Print
 
 The print times and the filament come from the Printdeck slice (`printdeck_slice.py`): the
-Printdeck slicer with the TAZ Workhorse SE profile `pla-0.20-standard`, white PLA (`roll-5`).
+Printdeck slicer with the TAZ Workhorse SE profile `pla-0.30-fast`, faster walls, and white
+PLA (`roll-5`). The values are for one part.
 
 | Part | Count | Orientation | Filament | Time |
 |---|---|---|---|---|
-| `fit_arc.stl` | 1 | top face on the bed | 2 g | 15 min |
-| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 36 g | 3 h 30 min |
-| `jig_cart.stl` (cartridge) | 1 | on its back end | 9 g | 47 min |
-| `jig_pin.stl` (lock pin) | 1 | cap on the bed | 0.4 g | 6 min |
-| `collar.stl` | 6 | top face on the bed (upside down) | 19 g | 1 h 40 min |
-| `basket.stl` | 6 | floor on the bed | 33 g | 5 h 06 min |
-| `lid.stl` | 6 | top face on the bed (upside down) | 28 g | 3 h 34 min |
+| `fit_arc.stl` | 1 | top face on the bed | 2 g | 7 min |
+| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 36 g | 1 h 50 min |
+| `jig_cart.stl` (cartridge) | 1 | on its back end | 9 g | 24 min |
+| `jig_pin.stl` (lock pin) | 1 | cap on the bed | 0.4 g | 4 min |
+| `collar.stl` | 6 | top face on the bed (upside down) | 19 g | 38 min |
+| `basket.stl` | 6 | floor on the bed | 25 g | 1 h 07 min |
+| `lid.stl` | 6 | top face on the bed (upside down) | 16 g | 58 min |
 
-One set (collar, basket, lid) is 80 g and 10 h 20 min. Six sets are 480 g and 62 h. The tools
-are 48 g and 4 h 40 min, once. The `roll-5` white PLA entry is new in
+One set (a collar, a basket, and a lid) is 61 g and 2 h 43 min. Six sets are 365 g and
+16 h 18 min. The tools are 48 g and 2 h 25 min, once. The `roll-5` white PLA entry is new in
 `profiles/taz-workhorse-se/cura.json`. It copies the black MatterHackers PLA settings.

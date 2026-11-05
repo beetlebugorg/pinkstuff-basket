@@ -59,22 +59,21 @@ BASKET_T = 1.0       # wall (2 lines of 0.5 mm)
 BASKET_IN = BASKET_O - BASKET_T
 RIM_CLR = 0.3        # gap from the basket rim to the band bore
 DEPTH = 35.0         # the floor of the basket is 35 mm below the cut: the basket is 40 mm tall
-FLOOR_T = 1.2        # floor thickness (6 layers)
+FLOOR_T = 0.9        # floor thickness (3 layers of 0.3 mm)
 RIB_T = 1.5          # the two floor ribs (a cross)
 RIB_H = 6.0          # height of the ribs above the floor
 FLOOR_SLOT = 2.0     # width of the drain slots (pellets are larger, about 3 to 8 mm)
-SLOT_L = 14.0        # length of a slot
-SLOT_PITCH = 3.5     # row pitch (1.5 mm bars)
-SLOT_GAP = 2.5       # bridge between two slots in a row
-SLOT_EDGE = 2.0      # the slots stay 2 mm from the wall
+SLOT_PITCH = 3.0     # row pitch (1 mm bars, 2 lines)
+SLOT_EDGE = 1.5      # the slots stay 1.5 mm from the wall
+CROSS_X = 36.0       # the slots stop at the cross ribs at X = 0 and X = +-36 mm
+CROSS_W = 2.0        # width of the cross bands in the lid
 # Side slots in the basket wall: less filament, and more air to the pellets. Each slot is
 # vertical with a 45 deg pointed top, so it prints with no support.
 WSLOT_W = 2.0        # width
 WSLOT_H = 8.0        # height of the straight part
 WSLOT_PITCH = 3.5    # pitch around the wall (1.5 mm bars)
-WSLOT_ROWS = 2       # rows
-WSLOT_GAP = 3.0      # band between two rows
-WSLOT_Z0 = -DEPTH + FLOOR_T + RIB_H + 2   # bottom of the lowest row
+WSLOT_ROWS = 0       # rows (0: no side slots; they add print time)
+WWSLOT_Z0 = -DEPTH + FLOOR_T + RIB_H + 2   # bottom of the lowest row
 
 # --- The lid ---
 LID_CLR = 0.25       # gap from the lid skirt to the collar skirt
@@ -84,12 +83,12 @@ SLIT_W = 1.0         # width of a slit
 SLIT_TOP = BAND_H - 1.5  # the slits stop 1.5 mm below the lid plate
 LID_IN = SKIRT_O + LID_CLR
 LID_O = LID_IN + LID_SKIRT_T
-LID_T = 1.2          # lid plate thickness (6 layers)
+LID_T = 0.9          # lid plate thickness (3 layers of 0.3 mm)
 LID_SKIRT_Z0 = -6.0  # bottom of the lid skirt
 SNAP = 0.5           # the bead goes 0.5 mm inside the ridge: the snap interference
 BEAD_APEX = SKIRT_O - SNAP
-VENT_SLOT = 1.5      # width of the air slots in the lid (3 lines)
-VENT_EDGE = 4.0      # the vents stay inside BASKET_IN - VENT_EDGE
+VENT_SLOT = 2.0      # width of the air slots in the lid
+VENT_EDGE = 3.0      # the vents stay inside BASKET_IN - VENT_EDGE
 TAB_W = 30.0         # pull tab at +Y, at the bottom of the skirt
 TAB_OUT = 3.0        # the tab goes 3 mm out, at 45 deg
 
