@@ -8,7 +8,7 @@
 A desiccant basket for the bottom half of the round West Marine -50°F antifreeze gallon jug
 ("the pink stuff"), and a cutting ring that cuts the jug with a razor blade. The basket holds
 calcium chloride pellets (for example DampRid refills). The pellets take water from the air.
-The brine drips through the slots of the basket and collects in the jug.
+The brine drips through the open grid of the basket floor and collects in the jug.
 
 - **Cutting ring.** A ring on three legs holds the jug centred, and holds a razor blade level
   100 mm above the table. Two 45° braces on each leg make the ring rigid. One leg braces the
@@ -20,12 +20,16 @@ The brine drips through the slots of the basket and collects in the jug.
   of the cartridge, edge first. The PDF shows how to load it.
 - **Collar.** A tapered groove goes over the cut edge of the jug. The edge wedges into it.
   Walls from 0.6 to 2.4 mm fit. A 45° seat above the cut holds the basket.
-- **Basket.** 0.64 L of space (about 560 g of pellets), 40 mm tall. Fill it with 400 g: see "Desiccant" below. The flared rim sits on the seat. A 1 mm wall, a
-  floor of long 2 mm slots between 1 mm bars, and four floor ribs. The jug holds 1.1 L of
+- **Basket.** 0.64 L of space (about 560 g of pellets), 40 mm tall. Fill it with 400 g: see "Desiccant" below. The flared rim sits on the seat. A 1 mm wall, an
+  open grid floor (2 mm openings), and four floor ribs. The jug holds 1.1 L of
   brine below it. Lift it out by the two finger notches in the collar.
 - **Lid.** A bead in the skirt snaps over a ridge on the collar. 16 slits cut the skirt into
   fingers (0.5 mm snap, 1.17 % strain in PLA). The skirt also clamps the collar onto the jug.
-  The plate sits on the basket rim. The air slots are 2 mm wide, so the pellets stay in.
+  The plate sits on the basket rim. It is an open grid with 2 mm openings, so the pellets stay in.
+- **Open grid.** The basket floor and the lid plate are solid in the model. The basket and lid
+  settings (no top or bottom skin, lines infill 2.5 mm apart, connected lines) print them as an
+  open grid. Each layer is one path, with no small holes. Use these settings: a normal profile
+  prints a solid floor.
 - No supports, no glue. White PLA, to match the pellets. The cutting ring needs one M2.5 heat-set
   insert (4 mm long, 3.6 mm hole) and one M2.5 x 12 socket head screw.
 
@@ -70,15 +74,15 @@ PLA (`roll-5`). The values are for one part.
 
 | Part | Count | Orientation | Filament | Time |
 |---|---|---|---|---|
-| `fit_arc.stl` | 1 | top face on the bed | 2 g | 7 min |
-| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 36 g | 1 h 50 min |
-| `jig_cart.stl` (cartridge) | 1 | on its back end | 9 g | 24 min |
-| `collar.stl` | 1 | top face on the bed (upside down) | 19 g | 38 min |
-| `basket.stl` | 1 | floor on the bed | 25 g | 1 h 07 min |
-| `lid.stl` | 1 | top face on the bed (upside down) | 16 g | 58 min |
+| `fit_arc.stl` | 1 | top face on the bed | 2.2 g | 6 min |
+| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 44 g | 2 h 09 min |
+| `jig_cart.stl` (cartridge) | 1 | on its back end | 11 g | 26 min |
+| `collar.stl` | 1 | top face on the bed (upside down) | 19 g | 33 min |
+| `basket.stl` | 1 | floor on the bed | 25 g | 45 min |
+| `lid.stl` | 1 | top face on the bed (upside down) | 13 g | 31 min |
 
-One set (a collar, a basket, and a lid) is 61 g and 2 h 43 min. Six sets are 365 g and
-16 h 18 min. The tools are 48 g and 2 h 25 min, once. The `roll-5` white PLA entry is new in
+One set (a collar, a basket, and a lid) is 57 g and 1 h 48 min. The tools (the cutting ring
+and the cartridge) are 54 g and 2 h 35 min, once. The `roll-5` white PLA entry is new in
 `profiles/taz-workhorse-se/cura.json`. It copies the black MatterHackers PLA settings.
 
 ## Desiccant

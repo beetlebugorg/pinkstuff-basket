@@ -86,12 +86,16 @@ PRINTS = [
 ]
 
 SETTINGS = [
-    ("Profiles", "Printdeck: <code>taz-workhorse-se/pla-0.20-standard</code>, roll-4. Or in Cura: run "
+    ("Profiles", "Printdeck: <code>taz-workhorse-se/pla-0.30-fast</code>, roll-5, with the part settings in printdeck.yml. Or in Cura: run "
                  "<code>python3 cura/make_profiles.py --install</code> with Cura closed, then pick “Desiccant - …”."),
     ("Material", "PLA, 2.85 mm, 0.5 mm nozzle. Calcium chloride brine does not attack PLA, PETG, or the HDPE jug. "
                  "Keep the brine away from metal."),
     ("Layers", f"0.3 mm layers (Printdeck profile pla-0.30-fast). Basket: {S.BASKET_T:.1f} mm wall (2 lines), "
-               f"{S.FLOOR_T:.1f} mm floor (3 layers). Lid: {S.LID_T:.1f} mm plate (3 layers). 20 to 40 % grid infill, skirt."),
+               f"{S.FLOOR_T:.1f} mm floor (4 layers). Lid: {S.LID_T:.1f} mm plate (4 layers). Skirt."),
+    ("Open grid", f"The basket floor and the lid plate are solid in the model. The basket and lid settings print them as "
+                  f"an open grid: no top or bottom skin, lines infill {S.GRID_PITCH} mm apart, connected lines. The "
+                  f"openings are {S.GRID_PITCH - 0.5:.1f} mm square. Use these settings. A normal profile prints a "
+                  "solid floor, and the brine cannot drain."),
     ("Speed", "Faster speeds for a functional part: print 70 mm/s, infill 75 mm/s, outer wall 60 mm/s, inner walls "
               "70 mm/s, top and bottom 70 mm/s, first layer 30 mm/s, minimum layer time 5 s, faster wall accelerations."),
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
@@ -151,15 +155,15 @@ STEPS = [
         "This is 11 mm below the rim.",
         f"Do not fill it full. A full basket holds {FIT['pellet_l']:.2f} L, about 560 g. At 70 % humidity, 560 g of pellets "
         f"makes about 1.6 L of brine. The jug holds only {FIT['brine_l']:.2f} L of brine below the basket.",
-        "Use calcium chloride pellets, for example DampRid refills. The pellets must be larger than the 2 mm slots.",
+        "Use calcium chloride pellets, for example DampRid refills. The pellets must be larger than the 2 mm openings in the floor.",
         "To lift the basket out, put your fingers into the two notches in the collar and pull up on the rim.",
-    ], "The pellets take water from the air and turn to brine. The brine drips through the slots into the jug."),
+    ], "The pellets take water from the air and turn to brine. The brine drips through the open grid of the floor into the jug."),
     ("lid", "Snap on the lid", ["lid"], [
         "Put the lid on the collar, with the pull tab at one side.",
         "Push down on each side of the lid until it clicks. The bead of the skirt goes over the ridge of the collar.",
         "To remove the lid, pull the tab out and up.",
         "Empty the brine when it gets near the basket floor. Remove the collar with the basket and the lid. Pour the brine down a drain with water.",
-    ], f"The air slots in the lid are {S.VENT_SLOT:.1f} mm wide. Air goes in, and the pellets stay in if the jug falls over. "
+    ], f"The openings in the lid grid are {S.GRID_PITCH - 0.5:.1f} mm square. Air goes in, and the pellets stay in if the jug falls over. "
        "Brine can come out if the jug falls over: put the jug in a place where it can not fall."),
 ]
 
@@ -284,7 +288,7 @@ def how_page(n):
   <div class="fig"><img src="{img('section')}" style="max-height:90mm"></div>
   <p style="font-size:10pt;color:#444">The section through the middle. The basket holds {FIT['pellet_l']:.1f} L of pellets. The
   space below the basket holds {FIT['brine_l']:.1f} L of brine (cut at {S.CUT_H:.0f} mm). Four ribs stiffen the floor.
-  The floor has {FIT['floor_slots']} long slots, {S.FLOOR_SLOT:.0f} mm wide, between 1 mm bars. Long straight bars print fast.</p>
+  The floor prints as an open grid of connected lines, {S.GRID_PITCH} mm apart: one path for each layer, with no small holes.</p>
   {foot(n)}
 </section>"""
 

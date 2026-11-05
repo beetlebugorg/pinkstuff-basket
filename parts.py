@@ -135,8 +135,7 @@ def basket():
     for x in (-S.CROSS_X, 0.0, S.CROSS_X):
         ribs += Pos(x, 0, zr) * Box(S.RIB_T, span, S.RIB_H + 0.1, align=al)
     body += ribs & slab(S.BASKET_IN + 0.2, -S.DEPTH, 0)
-    cut, n = bars(S.BASKET_IN - S.SLOT_EDGE, S.FLOOR_SLOT, -S.DEPTH - 1, -S.DEPTH + S.FLOOR_T + 1, S.RIB_T / 2)
-    body -= cut
+    # The floor stays solid in the model. The slicer prints it as an open grid (see GRID_PITCH).
     if S.WSLOT_ROWS:
         body -= wall_slots()[0]
     return body
@@ -170,7 +169,7 @@ def lid():
         cut = Pos(r0, 0, S.LID_SKIRT_Z0 - 1) * Box(length, S.SLIT_W, S.SLIT_TOP - S.LID_SKIRT_Z0 + 1,
                                                    align=(Align.MIN, Align.CENTER, Align.MIN))
         body -= Rot(0, 0, a) * cut
-    return _vents(body, top)
+    return body             # the plate is an open grid in the print (see GRID_PITCH)
 
 
 def _vents(body, top):

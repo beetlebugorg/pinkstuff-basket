@@ -145,9 +145,11 @@ def write(path, name, quality_type, values, position=None):
 
 # The basket: 2 walls (the 1 mm wall is all wall), 20 % grid infill in the rim and the floor.
 # The collar and the lid: thin walls, all wall. The lid skirt (1 mm) is 2 lines.
-BASKET = {**FLAT, "wall_thickness": S.BASKET_T, "infill_sparse_density": 20, "infill_pattern": "grid"}
+# The basket and the lid: no skin, so the solid floor and the solid lid plate print as an open
+# grid of connected lines (GRID_PITCH apart). The walls are all wall.
+BASKET = {**FLAT, "wall_thickness": S.BASKET_T, "top_bottom_thickness": 0, "infill_pattern": "lines", "infill_sparse_density": 50 / S.GRID_PITCH, "zig_zaggify_infill": True}
 COLLAR = {**FLAT, "wall_thickness": 1.0, "infill_sparse_density": 40, "infill_pattern": "grid"}
-LID = {**FLAT, "wall_thickness": S.LID_SKIRT_T, "infill_sparse_density": 40, "infill_pattern": "grid"}
+LID = {**FLAT, "wall_thickness": S.LID_SKIRT_T, "top_bottom_thickness": 0, "infill_pattern": "lines", "infill_sparse_density": 50 / S.GRID_PITCH, "zig_zaggify_infill": True}
 
 PROFILES = [
     profile("Collar", "Collar", "collar.stl", COLLAR),
@@ -174,7 +176,7 @@ def engine_settings(values):
     layers = math.ceil(v["top_bottom_thickness"] / v["layer_height"] - 1e-6)
     d = v.get("infill_sparse_density", 20)
     pattern = v.get("infill_pattern", "grid")
-    v.update({"wall_line_count": walls, "top_layers": layers, "bottom_layers": layers,
+    v.update({"wall_line_count": walls, "top_layers": layers, "bottom_layers": layers, "initial_bottom_layers": layers,
               "infill_line_distance": LINE * 100 / d * FACTOR.get(pattern, 1) if d < 100 else LINE,
               "infill_pattern": pattern, "material_diameter": 2.85, "roofing_layer_count": 0,
               "flooring_layer_count": 0})
@@ -197,10 +199,10 @@ def slice_part(profile, extra=None, tag=""):
                                                  "/opt/ultimaker-cura/share/cura/resources/extruders"]))
     cmd = ["/lib64/ld-linux-x86-64.so.2", str(ENGINE), "slice", "-j", str(DEFS / "lulzbot_taz_workhorse_se.def.json")]
     cmd += args + ["-e0"] + args + ["-l", str(PROJECT / "stl" / profile["stl"]), "-o", str(gcode)]
-    # CuraEngine can stall in its G-code writer. Stop it after 4 minutes and try again.
-    for _ in range(3):
+    # CuraEngine can stall in its G-code writer. Stop it after 2 minutes and try again (6 times).
+    for _ in range(6):
         try:
-            subprocess.run(cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=int(os.environ.get("SLICE_TIMEOUT", 240)))
+            subprocess.run(cmd, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=int(os.environ.get("SLICE_TIMEOUT", 120)))
             break
         except subprocess.TimeoutExpired:
             gcode.unlink(missing_ok=True)

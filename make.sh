@@ -25,7 +25,7 @@ for n in ("collar", "basket", "lid", "fit_arc", "jig", "jig_cart"):
 sys.exit(1 if bad else 0)
 PY
 # Cura profiles, the filament of each part, and the support check (must be 0 g).
-SLICE_TIMEOUT=900 python3 cura/make_profiles.py
+python3 cura/make_profiles.py
 python3 - <<'PY'
 import json, sys
 s = json.load(open("build/supports.json"))

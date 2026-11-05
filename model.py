@@ -188,8 +188,8 @@ def main():
         f"{hi:.1f} mm fit. A {PRESS:.0f} mm push gives {info['collar_grip_mm3']} mm3 of wedge overlap")
     log(f"  lid snap: {S.SNAP:.2f} mm, skirt lever {info['lever']:.1f} mm, strain {info['strain_pct']:.2f} % "
         f"(limit {S.STRAIN_LIMIT} %)")
-    log(f"  basket: {vol:.2f} L of pellets, {P.floor_slot_count()} drain slots, {P.wall_slot_count()} side slots; brine space below it {res:.2f} L; "
-        f"{P.vent_slot_count()} air slots in the lid")
+    log(f"  basket: {vol:.2f} L of pellets; brine space below it {res:.2f} L; the floor and the lid plate print as an "
+        f"open grid ({S.GRID_PITCH} mm pitch)")
     log(f"  cutting ring: the edge at {S.YAW:.0f} deg cuts through the wall {info['blade_margin']:.1f} mm or more "
         f"from the blade ends ({S.BLADE_D} and {S.BLADE_D_MIN} mm blades, jug off centre), at Z = {S.CUT_H:.0f} mm")
     if "--no-export" in sys.argv:
@@ -240,7 +240,7 @@ def main():
     export_step(Compound(children=tools, label="cutting_ring"), os.path.join(HERE, "cad", "cutting-ring-assembly.step"))
 
     summary["fit"] = {**info, "wedge_depth": round(wd, 1), "pellet_l": round(vol, 2), "brine_l": round(res, 2), "wall_range": [round(v, 1) for v in P.wall_range()],
-                      "floor_slots": P.floor_slot_count(), "wall_slots": P.wall_slot_count(), "vent_slots": P.vent_slot_count()}
+                      "grid_pitch": S.GRID_PITCH}
     with open(os.path.join(BUILD, "parts.json"), "w") as fh:
         json.dump(summary, fh, indent=1)
     with open(os.path.join(BUILD, "manifest.json"), "w") as fh:

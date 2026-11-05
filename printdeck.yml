@@ -59,24 +59,24 @@ parts:
   - name: Basket
     group: Desiccant basket
     description: >-
-      The basket for the pellets: 0.6 L, 40 mm tall, with a 1 mm wall, a floor of long 2 mm slots, and floor ribs. Its flared rim sits on the seat of the collar. Print it floor down.
+      The basket for the pellets: 0.64 L, 40 mm tall, with a 1 mm wall and floor ribs. The floor is solid in the model. These settings (no skin, lines infill 2.5 mm apart) print it as an open grid with 2 mm openings. Its flared rim sits on the seat of the collar. Print it floor down.
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
     count: 1
-    settings: {wall_line_count: 2, infill_sparse_density: 20, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 20, infill_pattern: lines, infill_line_distance: 2.5, zig_zaggify_infill: true, top_layers: 0, bottom_layers: 0, initial_bottom_layers: 0, top_bottom_thickness: 0, roofing_layer_count: 0, flooring_layer_count: 0, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/basket.stl]
   - name: Lid
     group: Desiccant basket
     description: >-
       The lid snaps over the ridge of the collar and clamps the collar onto the jug. 16 slits cut its skirt into
-      fingers. The plate sits on the basket rim. The air slots are 2 mm wide, so the pellets stay in. Pull the
+      fingers. The plate sits on the basket rim. The plate is solid in the model. These settings print it as an open grid with 2 mm openings, so the pellets stay in. Pull the
       tab to remove it. Print it upside down, top face on the bed.
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
     count: 1
-    settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 20, infill_pattern: lines, infill_line_distance: 2.5, zig_zaggify_infill: true, top_layers: 0, bottom_layers: 0, initial_bottom_layers: 0, top_bottom_thickness: 0, roofing_layer_count: 0, flooring_layer_count: 0, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/lid.stl]
 
 docs:
