@@ -155,7 +155,6 @@ PROFILES = [
     profile("Lid", "Lid", "lid.stl", LID),
     profile("Jig", "Cutting ring", "jig.stl", {**FLAT, "wall_thickness": 1.0, "infill_sparse_density": 30, "infill_pattern": "grid"}),
     profile("JigCart", "Blade cartridge", "jig_cart.stl", {**FLAT, "wall_thickness": 1.0, "infill_sparse_density": 30, "infill_pattern": "grid"}),
-    profile("JigPin", "Lock pin", "jig_pin.stl", {**FLAT, "wall_thickness": 1.0, "infill_sparse_density": 100}),
     profile("FitArc", "Fit test arc", "fit_arc.stl", COLLAR),
 ]
 

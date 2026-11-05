@@ -11,7 +11,7 @@ grep -q "RESULT: OK" build/model.log || { echo "fit check failed"; exit 1; }
 uv run --no-project --with numpy --with scipy --with trimesh --with networkx python - <<'PY'
 import sys, math, trimesh
 bad = False
-for n in ("collar", "basket", "lid", "fit_arc", "jig", "jig_cart", "jig_pin"):
+for n in ("collar", "basket", "lid", "fit_arc", "jig", "jig_cart"):
     m = trimesh.load(f"stl/{n}.stl")
     ok = m.is_watertight and m.is_winding_consistent and m.body_count == 1
     nz, zc, area = m.face_normals[:, 2], m.triangles_center[:, 2], m.area_faces
@@ -25,13 +25,13 @@ for n in ("collar", "basket", "lid", "fit_arc", "jig", "jig_cart", "jig_pin"):
 sys.exit(1 if bad else 0)
 PY
 # Cura profiles, the filament of each part, and the support check (must be 0 g).
-python3 cura/make_profiles.py
+SLICE_TIMEOUT=900 python3 cura/make_profiles.py
 python3 - <<'PY'
 import json, sys
 s = json.load(open("build/supports.json"))
 bad = {k: v for k, v in s.items() if v > 0}
 print("  support check:", "0 g for all parts" if not bad else f"SUPPORT NEEDED {bad}")
-sys.exit(1 if bad or len(s) != 7 else 0)
+sys.exit(1 if bad or len(s) != 6 else 0)
 PY
 # The Printdeck slice of each part (the same slicer and profiles as the service): the print
 # time and the filament for the PDF.

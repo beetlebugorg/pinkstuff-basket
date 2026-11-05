@@ -195,9 +195,9 @@ def jig_x():
     uh = (math.sin(a), math.cos(a))
     vh = (math.cos(a), -math.sin(a))
     o = (R - S.JUG_T / 2, S.BLADE_D * math.sin(a) / 2)       # centres the blade on Y = 0
-    hd = (S.PIN_S + S.PIN_CLR) / 2 ** 0.5                       # half the diagonal of the pin hole
-    # The pin hole touches the back of the spine with a 0.05 mm gap (the diamond in direction v).
-    pv = S.BLADE_D + 0.05 + hd * max(abs(vh[0]), abs(vh[1]))
+    hd = S.SCREW_CLR / 2 ** 0.5                                 # half the diagonal of the screw hole
+    # The screw shank touches the back of the spine with a 0.05 mm gap.
+    pv = S.BLADE_D + 0.05 + S.SCREW_D / 2
     pin = (o[0] + vh[0] * pv, o[1] + vh[1] * pv)
     corners = [(o[0] + uh[0] * u + vh[0] * v, o[1] + uh[1] * u + vh[1] * v)
                for u in (-S.SPINE_L / 2, S.SPINE_L / 2) for v in (0, S.BLADE_D)]
@@ -236,14 +236,44 @@ def jig():
     zb = zt - S.RING_H
     body = extrude(Pos(0, 0, zb) * Circle(k["ro"]), S.RING_H)
     body += box(k["R"], k["R"] + S.SHELF_L, -S.SHELF_W / 2, S.SHELF_W / 2, zt - S.SHELF_T, zt)
-    for a in (60, 180, 300):
-        x0 = k["ro"] - 1.0
+    # One leg is under the shelf. Its fin goes out under the shelf as a brace. The fin edges
+    # slope up and away from the bed in the print (upside down), so they need no support.
+    x0 = k["ro"] - 1.0
+    xf = x0 + S.LEG_T + S.LEG_FIN
+    for a in (0, 120, 240):
         leg = box(x0, x0 + S.LEG_T, -S.LEG_W / 2, S.LEG_W / 2, 0, zt)
-        leg += box(x0 + S.LEG_T - 0.1, x0 + S.LEG_T + S.LEG_FIN, -S.LEG_T / 2, S.LEG_T / 2, 0, zt)
+        pts = [(x0, 0), (x0 + S.LEG_T + S.FOOT, 0), (xf, S.FOOT_H)]
+        if a == 0:
+            zs = zt - S.SHELF_T
+            pts += [(xf, zs - 10.0), (k["R"] + S.SHELF_L - 2.0, zs), (k["R"] + S.SHELF_L - 2.0, zt)]
+        else:
+            pts += [(xf, zt)]
+        pts += [(x0, zt)]
+        leg += extrude(Plane.XZ * Polygon(*pts, align=None), S.FIN_T / 2, both=True)
         body += Rot(0, 0, a) * leg
+        for sgn in (1, -1):
+            body += brace(k, a, sgn)
     body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
-    body -= diamond(S.PIN_S + S.PIN_CLR, zt - S.SHELF_T - 1, zt + 1, *k["pin"])
+    # The hole for the M2.5 heat-set insert goes through the shelf: the melted PLA can flow out.
+    body -= Pos(*k["pin"], zt - S.SHELF_T - 1) * Cylinder_(S.INSERT_D / 2, S.SHELF_T + 2)
     return body
+
+
+def brace(k, a, sgn):
+    """A straight strut at 45 deg: from the side of the leg at angle a up to the bottom of the ring.
+    The bore cut trims its inner face. In the print (upside down) its lower face is at 45 deg."""
+    rc = k["ro"] + 1.0
+    zb = k["top"] - S.RING_H
+    a1 = math.radians(a) + sgn * (S.LEG_W / 2) / rc
+    a2 = a1 + sgn * S.BRACE_REACH / rc
+    p1 = (rc * math.cos(a1), rc * math.sin(a1), zb + 2.0 - S.BRACE_REACH)
+    p2 = (rc * math.cos(a2), rc * math.sin(a2), zb + 2.0)
+    d = tuple(q - p for p, q in zip(p1, p2))
+    length = math.sqrt(sum(c * c for c in d))
+    am = (a1 + a2) / 2
+    mid = tuple((p + q) / 2 for p, q in zip(p1, p2))
+    pl = Plane(origin=mid, x_dir=d, z_dir=(math.cos(am), math.sin(am), 0))
+    return pl * Box(length + 6.0, S.BRACE_W, S.BRACE_T)
 
 
 def cartridge():
@@ -266,7 +296,7 @@ def cartridge():
     v0, h, d = S.BLADE_D - S.SPINE_D - 0.05, pt / 2, (pt - st) / 2
     prof = Polygon((v0 - d, -st / 2), (v0, -h), (80, -h), (80, h), (v0, h), (v0 - d, st / 2), align=None)
     body -= blade_frame(k, extrude(Plane.XZ * prof, hu, both=True))
-    body -= diamond(S.PIN_S + S.PIN_CLR, zt - 1, zt + S.CART_H + 1, *k["pin"])
+    body -= diamond(S.SCREW_CLR, zt - 1, zt + S.CART_H + 1, *k["pin"])
     # The turn arrow on the top: the near side of the jug moves this way (-Y).
     zt2, x = zt + S.CART_H, k["ri"] + 5.5
     tip = (x, -9.0)
@@ -275,13 +305,20 @@ def cartridge():
     return body
 
 
-def pin():
-    """The lock pin, in its hole: through the cartridge and the shelf, with a cap on top."""
+def insert():
+    """The M2.5 heat-set insert in the shelf, flush with the shelf top (the model only)."""
     k = jig_x()
-    zt = k["top"]
+    p = Pos(*k["pin"], k["top"] - S.INSERT_L)
+    return p * Cylinder_(S.INSERT_OD / 2, S.INSERT_L) - p * Pos(0, 0, -1) * Cylinder_(S.SCREW_D / 2 - 0.2, S.INSERT_L + 2)   # the thread core
+
+
+def screw():
+    """The M2.5 lock screw, in its hole: through the cartridge and into the shelf (the model only)."""
+    k = jig_x()
+    zt = k["top"] + S.CART_H
     px, py = k["pin"]
-    p = diamond(S.PIN_S, zt - S.SHELF_T - 2, zt + S.CART_H + 0.01, px, py)
-    return p + box(px - 4, px + 4, py - 4, py + 4, zt + S.CART_H, zt + S.CART_H + S.PIN_CAP)
+    sc = Pos(px, py, zt - S.SCREW_L) * Cylinder_(S.SCREW_D / 2, S.SCREW_L + 0.01)
+    return sc + Pos(px, py, zt) * Cylinder_(S.SCREW_HEAD_D / 2, S.SCREW_HEAD_H)
 
 
 def blade(width=S.BLADE_D, gap=0.0):

@@ -126,33 +126,36 @@ def check(problems):
     for dz in (3, 6, 10, 15):
         if overlap(Pos(0, 0, dz) * lid, collar) > 0.01:
             problems.append(f"the lid touches the collar {dz} mm above its seat")
-    # The cutting collar: the ring, the cartridge and the pin are clear of the jug and of each
-    # other. The blade fits its slot. The pin locks the blade and the cartridge.
-    jig, cart, pin, blade, full = P.jig(), P.cartridge(), P.pin(), P.blade(), P.jug_full()
+    # The cutting collar: the ring, the cartridge and the screw are clear of the jug and of each
+    # other. The blade fits its slot. The screw locks the blade and the cartridge.
+    jig, cart, pin, blade, full, ins = P.jig(), P.cartridge(), P.screw(), P.blade(), P.jug_full(), P.insert()
     for name, a, b in (("the ring touches the jug", jig, full), ("the cartridge touches the jug", cart, full),
                        ("the cartridge touches the ring", cart, jig), ("the blade does not fit the slot", cart, blade),
-                       ("the pin does not fit the cartridge", pin, cart), ("the pin does not fit the ring", pin, jig)):
+                       ("the screw does not fit the cartridge", pin, cart), ("the screw touches the blade", pin, blade),
+                       ("the screw touches the ring", pin, jig), ("the insert touches the cartridge", ins, cart)):
         v = overlap(a, b)
         if v > 0.01:
             problems.append(f"{name}: {v:.2f} mm3")
+    if overlap(pin, ins) < 1.0:
+        problems.append("the screw does not reach the insert")
     k = P.jig_x()
     back = (k["vh"][0] * 1.5, k["vh"][1] * 1.5)
     if overlap(Pos(back[0], back[1], 0) * blade, pin) < 0.2:
-        problems.append("the pin does not stop the blade")
-    if overlap(Pos(0.5, 0, 0) * cart, pin) < 0.5:
-        problems.append("the pin does not stop the cartridge")
+        problems.append("the screw does not stop the blade")
+    if overlap(Pos(1.5, 0, 0) * cart, pin) < 0.1:
+        problems.append("the screw does not stop the cartridge")
     for dx in (3, 6, 9, 12, 15):
         if overlap(Pos(dx, 0, 0) * cart, jig) > 0.01:
             problems.append(f"the cartridge does not slide out: contact at {dx} mm")
     if overlap(Pos(13, 0, 0) * blade, full) > 0.01:
         problems.append("the blade does not clear the jug when the cartridge is pulled back 13 mm")
     # The edge must cross both faces of the jug wall, 2 mm or more from the blade ends. Check a
-    # 19 mm and a 17.5 mm blade (back against the pin), with the jug at either side of the ring.
-    pin_back = k["pv"] - S.BLADE_D - (S.PIN_S / 2 ** 0.5) * max(abs(k["vh"][0]), abs(k["vh"][1]))
+    # 19 mm and a 17.5 mm blade (back against the screw), with the jug at either side of the ring.
+    pin_back = k["pv"] - S.BLADE_D - S.SCREW_D / 2
     lim = S.BLADE_L / 2 - 2.0
     worst = []
     for width in (S.BLADE_D, S.BLADE_D_MIN):
-        gap = pin_back                  # the cut pushes the blade back to the pin
+        gap = pin_back                  # the cut pushes the blade back to the screw
         for shift in (-S.RING_CLR, 0.0, S.RING_CLR):
             uo, ui = P.edge_crossings(width, gap, shift)
             if uo is None or ui is None or not (-lim < ui < uo < lim):
@@ -206,8 +209,7 @@ def main():
         manifest.append({"name": name, "file": name + ".stl", "material": mat, "group": group})
 
     printed = {"collar": (collar, True), "basket": (basket, False), "lid": (lid, True),
-               "fit_arc": (P.fit_arc(), True), "jig": (jig, True), "jig_cart": (cart, "end"),
-               "jig_pin": (pin, True)}
+               "fit_arc": (P.fit_arc(), True), "jig": (jig, True), "jig_cart": (cart, "end")}
     for name, (shape, flip) in printed.items():
         export_step(shape, os.path.join(HERE, "cad", name + ".step"))
         pose = print_pose(shape, flip)
@@ -225,12 +227,12 @@ def main():
         c = Pos(0, 0, 0) * shape
         c.label, c.color = name, Color(*hex_rgb(COLOURS[mat]))
         children.append(c)
-    for name, shape, mat in (("jig", jig, "pla"), ("jig_cart", cart, "pla"), ("jig_pin", pin, "pla"),
-                            ("blade", blade, "steel"), ("jug_full", full, "jug")):
+    for name, shape, mat in (("jig", jig, "pla"), ("jig_cart", cart, "pla"), ("screw", pin, "steel"),
+                            ("insert", P.insert(), "steel"), ("blade", blade, "steel"), ("jug_full", full, "jug")):
         mesh(name, shape, mat, name)
     export_step(Compound(children=children, label="desiccant"), os.path.join(HERE, "cad", "desiccant-assembly.step"))
     tools = []
-    for name, shape, mat in (("cutting_ring", jig, "pla"), ("cartridge", cart, "pla"), ("lock_pin", pin, "pla"),
+    for name, shape, mat in (("cutting_ring", jig, "pla"), ("cartridge", cart, "pla"), ("m2_5_screw", pin, "steel"), ("m2_5_insert", P.insert(), "steel"),
                              ("razor_blade", blade, "steel")):
         c = Pos(0, 0, 0) * shape
         c.label, c.color = name, Color(*hex_rgb(COLOURS[mat]))

@@ -79,7 +79,6 @@ N_SETS = 1
 PRINTS = [
     ("jig", "White", 1, "Upside down, the ring top on the bed. Print it once for all the jugs."),
     ("jig_cart", "White", 1, "On its back end, the open end of the blade slot on the bed."),
-    ("jig_pin", "White", 1, "Cap on the bed."),
     ("fit_arc", "White", 1, "Top face on the bed. Print this first. It tests the groove and the diameter on the jug."),
     ("collar", "White", N_SETS, "Top face on the bed (upside down). The groove opens to the top."),
     ("basket", "White", N_SETS, "Floor on the bed. The rim flares out at 45°."),
@@ -93,37 +92,42 @@ SETTINGS = [
                  "Keep the brine away from metal."),
     ("Layers", f"0.3 mm layers (Printdeck profile pla-0.30-fast). Basket: {S.BASKET_T:.1f} mm wall (2 lines), "
                f"{S.FLOOR_T:.1f} mm floor (3 layers). Lid: {S.LID_T:.1f} mm plate (3 layers). 20 to 40 % grid infill, skirt."),
-    ("Speed", "Faster walls for a functional part: outer wall 50 mm/s, inner walls 60 mm/s, top and bottom 60 mm/s, "
-              "first layer 25 mm/s, minimum layer time 6 s."),
+    ("Speed", "Faster speeds for a functional part: print 70 mm/s, infill 75 mm/s, outer wall 60 mm/s, inner walls "
+              "70 mm/s, top and bottom 70 mm/s, first layer 30 mm/s, minimum layer time 5 s, faster wall accelerations."),
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
     ("Tools", "One single-edge razor blade with a folded steel spine (1.5 in long, 11/16 to 3/4 in wide, 0.010 in thick; "
               "for example Personna #9 or Stanley 11-515), a flat table, and sandpaper (120 grit)."),
+    ("Hardware", "One M2.5 heat-set insert, 4 mm long, for a 3.6 mm hole (CNC Kitchen type). One M2.5 x 12 socket head "
+                 "cap screw and a 2 mm hex key. A soldering iron at 220 °C to set the insert."),
 ]
 
 STEPS = [
-    ("blade", "Load the blade", ["cartridge", "lock pin", "razor blade"], [
+    ("blade", "Load the blade", ["cartridge", "razor blade", "2 mm hex key"], [
         "Use a single-edge razor blade with a folded steel spine: 1.5 in long, 11/16 to 3/4 in wide, 0.009 in thick.",
         "Hold the blade by the spine. Point the edge away from you.",
         "Find the back end of the cartridge: the slot is open at the back and at one side. The thin slot is for "
         "the blade, the thick part of the slot is for the spine.",
         "Slide the blade into the open slot, edge first, flat, with the spine at the back. The slot is at an angle: "
         "follow it.",
-        "Push the spine in with the tip of the lock pin until it stops. The spine stops at the step in the slot.",
+        "Push the spine in with the short end of the hex key until it stops. The spine stops at the step in the slot.",
         f"Look at the front of the cartridge (the curved end). The blade is at {S.YAW:.0f}°. Its tip comes out about 10 mm.",
-        "Do not put in the pin yet. The pin goes in after the cartridge is on the ring.",
+        "Look down the screw hole. The hole must be clear behind the spine. If the spine covers it, push the blade in more.",
     ], "The spine is thicker than the blade slot, so the blade goes in only one way: edge first, toward the jug. "
-       "To take the blade out, pull the pin. Hold the cartridge over a table, back end down. "
+       "To take the blade out, remove the screw. Hold the cartridge over a table, back end down. "
        "The blade slides out. Tap the cartridge if the blade does not move."),
-    ("jig", "Cut the jug", ["cutting ring", "loaded cartridge", "lock pin", "jug", "flat table"], [
+    ("jig", "Cut the jug", ["cutting ring", "loaded cartridge", "M2.5 x 12 screw", "2 mm hex key", "jug", "flat table"], [
         "Empty the jug. Rinse it with water and let it dry.",
+        "One time only: put the insert on the hole in the shelf. Push it in with the soldering iron at 220 °C until it is "
+        "flush with the shelf top. Let it cool.",
         "Stand the cutting ring on a flat table. Put the jug down into the ring from above.",
         "Put the loaded cartridge on the shelf, behind the ring, edge toward the jug. The side cheeks go down "
         "beside the shelf.",
         "Push the back end of the cartridge with your thumb. The tip of the angled blade goes through the wall first.",
-        "Drop the pin into the hole. The pin locks the blade and the cartridge.",
-        "Hold the shelf. Turn the jug by its handle CLOCKWISE (seen from above), one full turn. The arrow on the "
+        "Put the screw through the cartridge into the insert. Tighten it until the cartridge is tight on the shelf. "
+        "The screw clamps the cartridge, and its shank stops the blade. You do not have to hold the cartridge.",
+        "Turn the jug by its handle CLOCKWISE (seen from above), one full turn. The arrow on the "
         "cartridge shows the way the near side of the jug moves. The blade cuts a level line.",
-        "Pull the pin. Pull the cartridge back. Lift off the top half, then lift the jug out.",
+        "Remove the screw. Pull the cartridge back. Lift off the top half, then lift the jug out.",
         f"Sand the cut edge flat and remove the burrs. The cut is {S.CUT_H:.0f} mm above the table.",
     ], f"The blade is at {S.YAW:.0f}° to the wall, so the wall meets the sharp edge and the edge slices it. "
        "Turn the jug the other way and the wall hits the blunt end of the blade. Take the blade out after use."),
@@ -143,7 +147,10 @@ STEPS = [
        f"{FIT['wall_range'][0]:.1f} to {FIT['wall_range'][1]:.1f} mm wedges in. The lid snap also presses the collar skirt onto the jug."),
     ("basket", "Put in the basket", ["basket", "desiccant pellets"], [
         "Lower the basket into the collar. Its flared rim sits on the 45° seat of the collar.",
-        f"Fill the basket with desiccant pellets. It holds about {FIT['pellet_l']:.1f} L. Fill it to 10 mm below the rim.",
+        "Fill the basket with 400 g (0.9 lb) of calcium chloride pellets: about 450 mL (1.9 US cups), 28 mm deep. "
+        "This is 11 mm below the rim.",
+        f"Do not fill it full. A full basket holds {FIT['pellet_l']:.2f} L, about 560 g. At 70 % humidity, 560 g of pellets "
+        f"makes about 1.6 L of brine. The jug holds only {FIT['brine_l']:.2f} L of brine below the basket.",
         "Use calcium chloride pellets, for example DampRid refills. The pellets must be larger than the 2 mm slots.",
         "To lift the basket out, put your fingers into the two notches in the collar and pull up on the rim.",
     ], "The pellets take water from the air and turn to brine. The brine drips through the slots into the jug."),
@@ -163,8 +170,10 @@ ADJUST = [
      "Turn the jug clockwise. Change YAW by 5: a larger angle goes deeper, a smaller angle slices more."),
     ("The jug does not go into the cutting ring, or it is loose in it", "RING_CLR, JUG_DIA", f"{S.RING_CLR:.1f}, {S.JUG_DIA:.1f}",
      "Check JUG_DIA (MEASURE.md, J1). Change RING_CLR by 0.2."),
-    ("The edge does not come out of the front, and the pin does not go in", "SLOT_CLR, POCKET_CLR", f"{S.SLOT_CLR:.2f}, {S.POCKET_CLR:.2f}",
-     "The slot printed closed. Do not force the pin. Add 0.2 to SLOT_CLR, or 0.2 to POCKET_CLR if the spine sticks."),
+    ("The edge does not come out of the front, and the screw does not go in", "SLOT_CLR, POCKET_CLR", f"{S.SLOT_CLR:.2f}, {S.POCKET_CLR:.2f}",
+     "The slot printed closed. Do not force the screw. Add 0.2 to SLOT_CLR, or 0.2 to POCKET_CLR if the spine sticks."),
+    ("The insert is loose in the shelf, or it does not go in", "INSERT_D", f"{S.INSERT_D:.1f}",
+     "Set INSERT_D to the hole size on the data sheet of your insert. Reprint the ring."),
     ("The blade is loose in the slot", "SLOT_CLR", f"{S.SLOT_CLR:.2f}",
      "Subtract 0.1 from SLOT_CLR."),
     ("The edge stops at the mouth of the groove", "JUG_T, G_HALF_MOUTH", f"{S.JUG_T:.1f}, {S.G_HALF_MOUTH:.1f}",
@@ -200,7 +209,7 @@ def cover():
   circumference on a sample jug. The {S.JUG_T:.1f} mm wall is an estimate.
   Print the fit test arc first. <code>MEASURE.md</code> lists the measurements to take.</div>
   <div class="need"><div class="chip"><span class="sw" style="background:#f4f4f2;border:0.3mm solid #999"></span>White PLA</div>
-    <div class="chip">{total} g and {hours} for each jug</div><div class="chip">cutting ring {round(sum(FILAMENT[n]['grams'] for n in ('jig', 'jig_cart', 'jig_pin')))} g, once</div><div class="chip">No supports</div><div class="chip">No hardware</div></div>
+    <div class="chip">{total} g and {hours} for each jug</div><div class="chip">cutting ring {round(sum(FILAMENT[n]['grams'] for n in ('jig', 'jig_cart')))} g, once</div><div class="chip">No supports</div><div class="chip">One M2.5 x 12 screw</div></div>
   {foot(1)}
 </section>"""
 
@@ -227,7 +236,7 @@ def print_page():
   <table><tr><th></th><th>File</th><th class="n">Size (mm)</th><th class="n">Each</th><th class="n">Time each</th><th class="n">Count</th><th class="n">Filament</th><th class="n">Time</th><th class="n">Cost</th></tr>
   {''.join(rows)}</table>
   <p style="font-size:9.5pt;color:#444">Filament and print time from the Printdeck slice: the Printdeck slicer with the TAZ Workhorse SE profile
-  (pla-0.30-fast, faster walls, white PLA), the same slice as printdeck.beetlebug.org.
+  (pla-0.30-fast, faster speeds, white PLA), the same slice as printdeck.beetlebug.org.
   Cost at ${PRICE_PER_KG:.2f}/kg. The counts are for {N_SETS} jugs.</p>
   <h2 style="margin-top:4mm">Print</h2>
   <p style="margin:1mm 0">The STL files are in their print orientation. Load them, do not turn them.</p>
