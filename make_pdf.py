@@ -74,7 +74,7 @@ def cost(grams):
 
 
 # Name, colour, count, print notes. The order is the print order.
-N_SETS = 6
+N_SETS = 1
 
 PRINTS = [
     ("jig", "White", 1, "Upside down, the ring top on the bed. Print it once for all the jugs."),
@@ -96,23 +96,37 @@ SETTINGS = [
     ("Speed", "Faster walls for a functional part: outer wall 50 mm/s, inner walls 60 mm/s, top and bottom 60 mm/s, "
               "first layer 25 mm/s, minimum layer time 6 s."),
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
-    ("Tools", "One single-edge razor blade (1.5 × 0.75 in, with a folded spine), a flat table, and sandpaper (120 grit)."),
+    ("Tools", "One single-edge razor blade with a folded steel spine (1.5 in long, 11/16 to 3/4 in wide, 0.010 in thick; "
+              "for example Personna #9 or Stanley 11-515), a flat table, and sandpaper (120 grit)."),
 ]
 
 STEPS = [
-    ("jig", "Cut the jug", ["cutting ring", "cartridge", "pin", "razor blade", "jug", "flat table"], [
+    ("blade", "Load the blade", ["cartridge", "lock pin", "razor blade"], [
+        "Use a single-edge razor blade with a folded steel spine: 1.5 in long, 11/16 to 3/4 in wide, 0.009 in thick.",
+        "Hold the blade by the spine. Point the edge away from you.",
+        "Find the back end of the cartridge: the slot is open at the back and at one side. The thin slot is for "
+        "the blade, the thick part of the slot is for the spine.",
+        "Slide the blade into the open slot, edge first, flat, with the spine at the back. The slot is at an angle: "
+        "follow it.",
+        "Push the spine in with the tip of the lock pin until it stops. The spine stops at the step in the slot.",
+        f"Look at the front of the cartridge (the curved end). The blade is at {S.YAW:.0f}°. Its tip comes out about 10 mm.",
+        "Do not put in the pin yet. The pin goes in after the cartridge is on the ring.",
+    ], "The spine is thicker than the blade slot, so the blade goes in only one way: edge first, toward the jug. "
+       "To take the blade out, pull the pin. Hold the cartridge over a table, back end down. "
+       "The blade slides out. Tap the cartridge if the blade does not move."),
+    ("jig", "Cut the jug", ["cutting ring", "loaded cartridge", "lock pin", "jug", "flat table"], [
         "Empty the jug. Rinse it with water and let it dry.",
         "Stand the cutting ring on a flat table. Put the jug down into the ring from above.",
-        "Slide the razor blade into the back end of the cartridge, edge first, spine up to its stop. "
-        "The thick spine goes in only one way.",
-        "Put the cartridge on the shelf, behind the ring. Push its back end with your thumb. The blade goes through the wall.",
+        "Put the loaded cartridge on the shelf, behind the ring, edge toward the jug. The side cheeks go down "
+        "beside the shelf.",
+        "Push the back end of the cartridge with your thumb. The tip of the angled blade goes through the wall first.",
         "Drop the pin into the hole. The pin locks the blade and the cartridge.",
-        "Hold the shelf. Turn the jug by its handle, one full turn, in either direction. The blade cuts a level line.",
+        "Hold the shelf. Turn the jug by its handle CLOCKWISE (seen from above), one full turn. The arrow on the "
+        "cartridge shows the way the near side of the jug moves. The blade cuts a level line.",
         "Pull the pin. Pull the cartridge back. Lift off the top half, then lift the jug out.",
         f"Sand the cut edge flat and remove the burrs. The cut is {S.CUT_H:.0f} mm above the table.",
-    ], f"The ring centres the jug, so each cut is level and at the same height. The edge goes {FIT['blade_depth']:.1f} mm "
-       f"into the jug wall ({FIT['blade_depth_min']:.1f} mm at the least). The edge points into the ring, at the jug, and "
-       "your thumb pushes behind the blade. Take the blade out of the cartridge after use."),
+    ], f"The blade is at {S.YAW:.0f}° to the wall, so the wall meets the sharp edge and the edge slices it. "
+       "Turn the jug the other way and the wall hits the blunt end of the blade. Take the blade out after use."),
     ("part_fit_arc", "Fit test", ["fit test arc", "cut jug"], [
         "Push the groove of the fit test arc down over the cut edge.",
         "The edge must go into the groove and stop with a firm push.",
@@ -145,8 +159,8 @@ STEPS = [
 ADJUST = [
     ("The collar is loose on the jug, or it does not go over the edge", "JUG_DIA", f"{S.JUG_DIA:.0f}",
      "Measure the circumference of the jug at the cut, and divide by 3.1416 (MEASURE.md, J1)."),
-    ("The blade does not cut through the wall", "BLADE_OUT", f"{S.BLADE_OUT:.1f}",
-     "Add 0.5 to BLADE_OUT."),
+    ("The blade does not cut through the wall, or it tears it", "YAW", f"{S.YAW:.0f}",
+     "Turn the jug clockwise. Change YAW by 5: a larger angle goes deeper, a smaller angle slices more."),
     ("The jug does not go into the cutting ring, or it is loose in it", "RING_CLR, JUG_DIA", f"{S.RING_CLR:.1f}, {S.JUG_DIA:.1f}",
      "Check JUG_DIA (MEASURE.md, J1). Change RING_CLR by 0.2."),
     ("The blade is loose in the slot, or it does not go in", "BLADE_T, SPINE_T, SLOT_CLR", f"{S.BLADE_T:.2f}, {S.SPINE_T:.1f}, {S.SLOT_CLR:.2f}",

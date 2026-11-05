@@ -1,1 +1,14 @@
-{"J1_circumference_mm": 480, "JUG_DIA_mm": 152.8, "note": "tape around the middle of the sample jug"}
+{
+ "J1_circumference_mm": 480,
+ "JUG_DIA_mm": 152.8,
+ "note": "tape around the middle of the sample jug",
+ "B1_blade_t_mm": 0.25,
+ "B2_spine_t_mm": 1.0,
+ "B3_blade_l_mm": 38.9,
+ "B3_spine_l_mm": 39.7,
+ "blade_note": "the user's single-edge razor blade",
+ "B3_blade_d_mm": 19.4,
+ "hole_w_mm": 2.71,
+ "hole_h_mm": 6.0,
+ "hole_centre_from_spine_mm": 10.5
+}

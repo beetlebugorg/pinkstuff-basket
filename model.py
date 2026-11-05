@@ -135,22 +135,33 @@ def check(problems):
         v = overlap(a, b)
         if v > 0.01:
             problems.append(f"{name}: {v:.2f} mm3")
-    if overlap(Pos(1.5, 0, 0) * blade, pin) < 0.2:
+    k = P.jig_x()
+    back = (k["vh"][0] * 1.5, k["vh"][1] * 1.5)
+    if overlap(Pos(back[0], back[1], 0) * blade, pin) < 0.2:
         problems.append("the pin does not stop the blade")
     if overlap(Pos(0.5, 0, 0) * cart, pin) < 0.5:
         problems.append("the pin does not stop the cartridge")
-    for dx in (2, 4, 6, 8):
+    for dx in (3, 6, 9, 12, 15):
         if overlap(Pos(dx, 0, 0) * cart, jig) > 0.01:
             problems.append(f"the cartridge does not slide out: contact at {dx} mm")
-    if overlap(Pos(4, 0, 0) * blade, full) > 0.01:
-        problems.append("the blade does not clear the jug when the cartridge is pulled back 4 mm")
-    k = P.jig_x()
-    cut_depth = k["R"] - k["edge"]
-    worst = cut_depth - S.RING_CLR              # the jug is against the far side of the ring
-    if worst < S.JUG_T + 0.5:
-        problems.append(f"the blade goes only {worst:.1f} mm into the jug (wall {S.JUG_T} mm)")
-    info["blade_depth"] = round(cut_depth, 2)
-    info["blade_depth_min"] = round(worst, 2)
+    if overlap(Pos(13, 0, 0) * blade, full) > 0.01:
+        problems.append("the blade does not clear the jug when the cartridge is pulled back 13 mm")
+    # The edge must cross both faces of the jug wall, 2 mm or more from the blade ends. Check a
+    # 19 mm and a 17.5 mm blade (back against the pin), with the jug at either side of the ring.
+    pin_back = k["pv"] - S.BLADE_D - (S.PIN_S / 2 ** 0.5) * max(abs(k["vh"][0]), abs(k["vh"][1]))
+    lim = S.BLADE_L / 2 - 2.0
+    worst = []
+    for width in (S.BLADE_D, S.BLADE_D_MIN):
+        gap = pin_back                  # the cut pushes the blade back to the pin
+        for shift in (-S.RING_CLR, 0.0, S.RING_CLR):
+            uo, ui = P.edge_crossings(width, gap, shift)
+            if uo is None or ui is None or not (-lim < ui < uo < lim):
+                problems.append(f"the edge does not cut through the wall: blade {width} mm, jug at {shift:+.1f} mm "
+                                f"(crossings {uo}, {ui})")
+            else:
+                worst.append(min(lim - uo, ui + lim))
+    info["blade_yaw"] = S.YAW
+    info["blade_margin"] = round(min(worst), 1) if worst else 0.0
     eps, lever = strain()
     if eps > S.STRAIN_LIMIT:
         problems.append(f"the lid skirt bends too far: {eps:.2f} % strain")
@@ -176,8 +187,8 @@ def main():
         f"(limit {S.STRAIN_LIMIT} %)")
     log(f"  basket: {vol:.2f} L of pellets, {P.floor_slot_count()} drain slots, {P.wall_slot_count()} side slots; brine space below it {res:.2f} L; "
         f"{P.vent_slot_count()} air slots in the lid")
-    log(f"  cutting collar: the blade edge goes {info['blade_depth']:.1f} mm into a centred jug "
-        f"({info['blade_depth_min']:.1f} mm at the least) at Z = {S.CUT_H:.0f} mm")
+    log(f"  cutting ring: the edge at {S.YAW:.0f} deg cuts through the wall {info['blade_margin']:.1f} mm or more "
+        f"from the blade ends ({S.BLADE_D} and {S.BLADE_D_MIN} mm blades, jug off centre), at Z = {S.CUT_H:.0f} mm")
     if "--no-export" in sys.argv:
         log("RESULT: " + ("CLASHES" if problems else "OK"))
         return
@@ -218,6 +229,13 @@ def main():
                             ("blade", blade, "steel"), ("jug_full", full, "jug")):
         mesh(name, shape, mat, name)
     export_step(Compound(children=children, label="desiccant"), os.path.join(HERE, "cad", "desiccant-assembly.step"))
+    tools = []
+    for name, shape, mat in (("cutting_ring", jig, "pla"), ("cartridge", cart, "pla"), ("lock_pin", pin, "pla"),
+                             ("razor_blade", blade, "steel")):
+        c = Pos(0, 0, 0) * shape
+        c.label, c.color = name, Color(*hex_rgb(COLOURS[mat]))
+        tools.append(c)
+    export_step(Compound(children=tools, label="cutting_ring"), os.path.join(HERE, "cad", "cutting-ring-assembly.step"))
 
     summary["fit"] = {**info, "wedge_depth": round(wd, 1), "pellet_l": round(vol, 2), "brine_l": round(res, 2), "wall_range": [round(v, 1) for v in P.wall_range()],
                       "floor_slots": P.floor_slot_count(), "wall_slots": P.wall_slot_count(), "vent_slots": P.vent_slot_count()}

@@ -2,8 +2,8 @@
 # round West Marine -50F antifreeze gallon jug, and a cutting ring that cuts the jug with a razor blade.
 # The profiles in profiles/ are the Printdeck profiles of the TAZ Workhorse SE (0.5 mm nozzle).
 # All parts print in white PLA (to match the pellets) on 0.30 Fast, with faster walls and no
-# supports. The counts are for
-# 6 jugs. model.py writes the STL files in their print orientation.
+# supports. The counts are for 1 jug, for the first test. model.py writes the STL files in
+# their print orientation.
 project: pinkstuff-basket
 cover: docs/hero-light.png
 
@@ -62,7 +62,7 @@ parts:
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
-    count: 6
+    count: 1
     settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: skirt, speed_wall_0: 50, speed_wall_x: 60, speed_topbottom: 60, speed_layer_0: 25, speed_print_layer_0: 25, cool_min_layer_time: 6}
     files: [stl/collar.stl]
   - name: Basket
@@ -72,7 +72,7 @@ parts:
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
-    count: 6
+    count: 1
     settings: {wall_line_count: 2, infill_sparse_density: 20, adhesion_type: skirt, speed_wall_0: 50, speed_wall_x: 60, speed_topbottom: 60, speed_layer_0: 25, speed_print_layer_0: 25, cool_min_layer_time: 6}
     files: [stl/basket.stl]
   - name: Lid
@@ -84,7 +84,7 @@ parts:
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
-    count: 6
+    count: 1
     settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: skirt, speed_wall_0: 50, speed_wall_x: 60, speed_topbottom: 60, speed_layer_0: 25, speed_print_layer_0: 25, cool_min_layer_time: 6}
     files: [stl/lid.stl]
 
@@ -110,3 +110,20 @@ assemblies:
       - part: Lid
         file: build/mesh/lid.stl
         explode: [0, 0, 3]
+  - name: Cutting ring
+    description: >-
+      The cutting ring, the blade cartridge on its shelf, the lock pin, and a single-edge razor blade (1.5 in long,
+      11/16 to 3/4 in wide, with a folded steel spine). The blade slides into the back end of the cartridge.
+    items:
+      - part: Cutting ring
+        file: build/mesh/jig.stl
+      - part: Blade cartridge
+        file: build/mesh/jig_cart.stl
+        explode: [1, 0, 0]
+      - name: Razor blade (single edge, 1.5 in)
+        file: build/mesh/blade.stl
+        color: "#b8bcc0"
+        explode: [2, 0, 0]
+      - part: Lock pin
+        file: build/mesh/jig_pin.stl
+        explode: [0, 0, 1]

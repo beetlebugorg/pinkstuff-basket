@@ -13,6 +13,9 @@ The brine drips through the slots of the basket and collects in the jug.
 - **Cutting ring.** A ring on three legs holds the jug centred, and holds a razor blade level
   100 mm above the table. The blade sits in a cartridge on a shelf of the ring. Push the
   cartridge in, drop in the lock pin, and turn the jug. Each jug gets the same cut.
+  The blade is a single-edge razor blade with a folded steel spine: 1.5 in long, 11/16 to 3/4 in
+  wide, 0.009 in thick (for example Personna #9 or Stanley 11-515). It slides into the back end
+  of the cartridge, edge first. The PDF shows how to load it.
 - **Collar.** A tapered groove goes over the cut edge of the jug. The edge wedges into it.
   Walls from 0.6 to 2.4 mm fit. A 45° seat above the cut holds the basket.
 - **Basket.** 0.6 L of pellets, 40 mm tall. The flared rim sits on the seat. A 1 mm wall, a
@@ -39,7 +42,7 @@ is an estimate too. Print `stl/fit_arc.stl` first. `MEASURE.md` lists the measur
 | `parts.py` | The collar, the basket, the lid, the cutting ring, the cartridge, the pin, the fit test arc, the jug, and the blade, in build123d. |
 | `model.py` | The fit check, then `cad/*.step`, `stl/*.stl` (print orientation), and the meshes for the images. |
 | `stl/` | `collar.stl`, `basket.stl`, `lid.stl`, `jig.stl`, `jig_cart.stl`, `jig_pin.stl`, `fit_arc.stl`, in print orientation. |
-| `cad/` | A STEP file for each part, and `desiccant-assembly.step`. |
+| `cad/` | A STEP file for each part, `desiccant-assembly.step`, and `cutting-ring-assembly.step` (with the blade). |
 | `cura/make_profiles.py` | A Cura profile for each part, the filament use, and the support check. |
 | `printdeck.yml`, `profiles/` | The Printdeck build: the parts, the TAZ Workhorse profiles, and the PDF. |
 | `lineart/render.mjs` | The line-art images. |
@@ -68,9 +71,9 @@ PLA (`roll-5`). The values are for one part.
 | `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 36 g | 1 h 50 min |
 | `jig_cart.stl` (cartridge) | 1 | on its back end | 9 g | 24 min |
 | `jig_pin.stl` (lock pin) | 1 | cap on the bed | 0.4 g | 4 min |
-| `collar.stl` | 6 | top face on the bed (upside down) | 19 g | 38 min |
-| `basket.stl` | 6 | floor on the bed | 25 g | 1 h 07 min |
-| `lid.stl` | 6 | top face on the bed (upside down) | 16 g | 58 min |
+| `collar.stl` | 1 | top face on the bed (upside down) | 19 g | 38 min |
+| `basket.stl` | 1 | floor on the bed | 25 g | 1 h 07 min |
+| `lid.stl` | 1 | top face on the bed (upside down) | 16 g | 58 min |
 
 One set (a collar, a basket, and a lid) is 61 g and 2 h 43 min. Six sets are 365 g and
 16 h 18 min. The tools are 48 g and 2 h 25 min, once. The `roll-5` white PLA entry is new in

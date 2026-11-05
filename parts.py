@@ -2,6 +2,8 @@
 All parts are made in world coordinates (in use). model.py turns them to print orientation.
 A horizontal size is an offset o from the outer face of the jug (see shape.py)."""
 
+import math
+
 from build123d import (Align, Axis, Box, Circle, Plane, Polygon, Pos, Rectangle, Rot, Sketch, SlotOverall,
                        extrude, loft)
 
@@ -184,15 +186,37 @@ def vent_slot_count():
 # The jug axis is the Z axis, Z = 0 on the table. The shelf and the cartridge are at +X.
 
 def jig_x():
-    """The X positions at Y = 0: the blade edge, the back of the spine, the pin, the cartridge ends."""
+    """The cutting collar layout. The blade frame: the origin O is on the edge, at the middle of
+    the blade, where the edge crosses the middle of the jug wall. u is along the edge, v goes back
+    to the spine. The edge is at YAW to the jug wall."""
     R = S.JUG_DIA / 2
     ri = R + S.RING_CLR
-    edge = ri - S.BLADE_OUT
-    back = edge + S.BLADE_D
-    hd = (S.PIN_S + S.PIN_CLR) / 2 ** 0.5        # half the diagonal of the pin hole
-    pin = back + 0.05 + hd
-    return {"R": R, "ri": ri, "ro": ri + S.RING_T, "edge": edge, "back": back, "pin": pin, "hd": hd,
-            "out": pin + hd + 4.0, "top": S.CUT_H - S.CART_LOW}
+    a = math.radians(S.YAW)
+    uh = (math.sin(a), math.cos(a))
+    vh = (math.cos(a), -math.sin(a))
+    o = (R - S.JUG_T / 2, S.BLADE_D * math.sin(a) / 2)       # centres the blade on Y = 0
+    hd = (S.PIN_S + S.PIN_CLR) / 2 ** 0.5                       # half the diagonal of the pin hole
+    # The pin hole touches the back of the spine with a 0.05 mm gap (the diamond in direction v).
+    pv = S.BLADE_D + 0.05 + hd * max(abs(vh[0]), abs(vh[1]))
+    pin = (o[0] + vh[0] * pv, o[1] + vh[1] * pv)
+    corners = [(o[0] + uh[0] * u + vh[0] * v, o[1] + uh[1] * u + vh[1] * v)
+               for u in (-S.SPINE_L / 2, S.SPINE_L / 2) for v in (0, S.BLADE_D)]
+    out = max(max(c[0] for c in corners) + 3.0, pin[0] + hd + 4.0)
+    return {"R": R, "ri": ri, "ro": ri + S.RING_T, "a": a, "uh": uh, "vh": vh, "o": o, "pin": pin, "pv": pv,
+            "hd": hd, "out": out, "top": S.CUT_H - S.CART_LOW, "corners": corners}
+
+
+def blade_frame(k, shape):
+    """Move a shape from the blade frame (X = v, Y = u, Z = 0 at the cut) to the world."""
+    return Pos(k["o"][0], k["o"][1], S.CUT_H) * Rot(0, 0, -S.YAW) * shape
+
+
+def v_groove(p0, p1, z, w):
+    """A V-groove from p0 to p1 in the face at height z: a square prism at 45 deg about its axis."""
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+    length = math.hypot(dx, dy)
+    ang = math.degrees(math.atan2(dy, dx))
+    return Pos((p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2, z) * Rot(0, 0, ang) * Rot(45, 0, 0) * Box(length, w, w)
 
 
 def diamond(side, z0, z1, x, y=0.0):
@@ -218,13 +242,14 @@ def jig():
         leg += box(x0 + S.LEG_T - 0.1, x0 + S.LEG_T + S.LEG_FIN, -S.LEG_T / 2, S.LEG_T / 2, 0, zt)
         body += Rot(0, 0, a) * leg
     body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
-    body -= diamond(S.PIN_S + S.PIN_CLR, zt - S.SHELF_T - 1, zt + 1, k["pin"])
+    body -= diamond(S.PIN_S + S.PIN_CLR, zt - S.SHELF_T - 1, zt + 1, *k["pin"])
     return body
 
 
 def cartridge():
     """The blade cartridge, pushed in: it sits on the ring top and the shelf. The cheeks go down
-    beside the shelf. The blade slot and the spine pocket are open at the back end."""
+    beside the shelf. The blade slot is at YAW. It is open at the back and at the -Y side, so the
+    blade goes in from the back, edge first."""
     k = jig_x()
     zt = k["top"]
     body = box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zt, zt + S.CART_H)
@@ -233,16 +258,20 @@ def cartridge():
         ya, yb = sorted((sgn * y0, sgn * (y0 + S.CHEEK_T)))
         body += box(k["ro"] + 1.0, k["out"], ya, yb, zt - S.SHELF_T, zt + 0.01)
     body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
-    hy = S.BLADE_L / 2 + 0.3
+    hu = max(S.BLADE_L, S.SPINE_L) / 2 + 0.3
     st = S.BLADE_T + S.SLOT_CLR
-    body -= box(k["R"] - 5, k["out"] + 1, -hy, hy, S.CUT_H - st / 2, S.CUT_H + st / 2)
+    body -= blade_frame(k, box(-30, 80, -hu, hu, -st / 2, st / 2))
     # The spine pocket. Its front end is a 45 deg step, so it prints with no support.
     pt = S.SPINE_T + S.SLOT_CLR + 0.15
-    x0, x1, h, d = k["back"] - S.SPINE_D - 0.05, k["out"] + 1, pt / 2, (pt - st) / 2
-    z = S.CUT_H
-    prof = Polygon((x0 - d, z - st / 2), (x0, z - h), (x1, z - h), (x1, z + h), (x0, z + h), (x0 - d, z + st / 2), align=None)
-    body -= extrude(Plane.XZ * prof, hy, both=True)
-    body -= diamond(S.PIN_S + S.PIN_CLR, zt - 1, zt + S.CART_H + 1, k["pin"])
+    v0, h, d = S.BLADE_D - S.SPINE_D - 0.05, pt / 2, (pt - st) / 2
+    prof = Polygon((v0 - d, -st / 2), (v0, -h), (80, -h), (80, h), (v0, h), (v0 - d, st / 2), align=None)
+    body -= blade_frame(k, extrude(Plane.XZ * prof, hu, both=True))
+    body -= diamond(S.PIN_S + S.PIN_CLR, zt - 1, zt + S.CART_H + 1, *k["pin"])
+    # The turn arrow on the top: the near side of the jug moves this way (-Y).
+    zt2, x = zt + S.CART_H, k["ri"] + 5.5
+    tip = (x, -9.0)
+    for p0, p1 in (((x, 9.0), tip), ((x - 4.0, -5.0), tip), ((x + 4.0, -5.0), tip)):
+        body -= v_groove(p0, p1, zt2, S.ARROW_W)
     return body
 
 
@@ -250,17 +279,41 @@ def pin():
     """The lock pin, in its hole: through the cartridge and the shelf, with a cap on top."""
     k = jig_x()
     zt = k["top"]
-    p = diamond(S.PIN_S, zt - S.SHELF_T - 2, zt + S.CART_H + 0.01, k["pin"])
-    return p + box(k["pin"] - 4, k["pin"] + 4, -4, 4, zt + S.CART_H, zt + S.CART_H + S.PIN_CAP)
+    px, py = k["pin"]
+    p = diamond(S.PIN_S, zt - S.SHELF_T - 2, zt + S.CART_H + 0.01, px, py)
+    return p + box(px - 4, px + 4, py - 4, py + 4, zt + S.CART_H, zt + S.CART_H + S.PIN_CAP)
 
 
-def blade():
-    """A single-edge razor blade in the cartridge, edge toward the jug, the spine on its stop."""
+def blade(width=S.BLADE_D, gap=0.0):
+    """A single-edge razor blade in the cartridge, edge toward the jug, at YAW. width: the blade
+    from the edge to the back of the spine. A narrow blade sits back against the pin (gap: the
+    extra move back)."""
     k = jig_x()
-    hy = S.BLADE_L / 2
-    b = box(k["edge"], k["back"] - S.SPINE_D, -hy, hy, S.CUT_H - S.BLADE_T / 2, S.CUT_H + S.BLADE_T / 2)
-    b += box(k["back"] - S.SPINE_D, k["back"], -hy, hy, S.CUT_H - S.SPINE_T / 2, S.CUT_H + S.SPINE_T / 2)
-    return b
+    hu = S.BLADE_L / 2
+    v0 = S.BLADE_D - width + gap
+    b = box(v0, v0 + width - S.SPINE_D, -hu, hu, -S.BLADE_T / 2, S.BLADE_T / 2)
+    b += box(v0 + width - S.SPINE_D, v0 + width, -S.SPINE_L / 2, S.SPINE_L / 2, -S.SPINE_T / 2, S.SPINE_T / 2)
+    hole = Pos(v0 + width - S.HOLE_C, 0, -1) * SlotOverall(S.HOLE_H, S.HOLE_W)
+    b -= extrude(hole, 2)
+    return blade_frame(k, b)
+
+
+def edge_crossings(width=S.BLADE_D, gap=0.0, shift=0.0):
+    """Where the edge crosses the outer and the inner face of the jug wall, as u along the edge.
+    shift: the jug centre moves this much along X. Return (u_outer, u_inner) or None."""
+    k = jig_x()
+    v0 = S.BLADE_D - width + gap
+    ox, oy = k["o"][0] + k["vh"][0] * v0, k["o"][1] + k["vh"][1] * v0
+    res = []
+    for r in (k["R"], k["R"] - S.JUG_T):
+        hit = None
+        for i in range(-2000, 2001):
+            u = i * S.BLADE_L / 4000
+            x, y = ox + k["uh"][0] * u - shift, oy + k["uh"][1] * u
+            if math.hypot(x, y) <= r:
+                hit = u                 # the last u inside: the deep end is inside, the far end out
+        res.append(hit)
+    return tuple(res)
 
 
 def jug_full():

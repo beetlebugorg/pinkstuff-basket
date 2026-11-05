@@ -20,8 +20,8 @@ Also check:
 
 | # | Value in `shape.py` | Now | How to measure |
 |---|---|---|---|
-| B1 | `BLADE_T` | 0.25 (ESTIMATE) | OUTSIDE: the thickness of the blade, near the edge. Use the outside jaws. |
-| B2 | `SPINE_T`, `SPINE_D` | 0.9, 5.5 (ESTIMATE) | OUTSIDE: the thickness of the folded spine, and its depth from the back. |
-| B3 | `BLADE_L`, `BLADE_D` | 38.5, 19.0 (ESTIMATE) | OUTSIDE: the length of the edge, and the width from the edge to the back of the spine. |
+| B1 | `BLADE_T` | 0.25 (MEASURED) | OUTSIDE: the thickness of the blade, near the edge. Use the outside jaws. |
+| B2 | `SPINE_T`, `SPINE_D` | 1.0 (MEASURED), 5.5 (ESTIMATE) | OUTSIDE: the thickness of the folded spine, and its depth from the back. |
+| B3 | `BLADE_L`, `SPINE_L`, `BLADE_D` | 38.9, 39.7, 19.4 (MEASURED; 17.5 also fits) | OUTSIDE: the length of the edge, and the width from the edge to the back of the spine. |
 
 After a change, print `stl/fit_arc.stl` again before the full collar.
