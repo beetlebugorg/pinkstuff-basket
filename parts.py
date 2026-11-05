@@ -262,7 +262,7 @@ def cartridge():
     st = S.BLADE_T + S.SLOT_CLR
     body -= blade_frame(k, box(-30, 80, -hu, hu, -st / 2, st / 2))
     # The spine pocket. Its front end is a 45 deg step, so it prints with no support.
-    pt = S.SPINE_T + S.SLOT_CLR + 0.15
+    pt = S.SPINE_T + S.POCKET_CLR
     v0, h, d = S.BLADE_D - S.SPINE_D - 0.05, pt / 2, (pt - st) / 2
     prof = Polygon((v0 - d, -st / 2), (v0, -h), (80, -h), (80, h), (v0, h), (v0 - d, st / 2), align=None)
     body -= blade_frame(k, extrude(Plane.XZ * prof, hu, both=True))
