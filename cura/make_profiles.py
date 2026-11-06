@@ -64,21 +64,21 @@ COMMON = {
     "skin_monotonic": True,
 }
 
-# PLA, 0.2 mm layers, as the Printdeck profile pla-0.20-standard.
+# PLA, 0.2 mm layers. The speeds are the fast speeds of printdeck.yml.
 LAYER = {
     "layer_height": 0.2,
     "top_bottom_thickness": 1.2,
-    "speed_print": 50,
-    "speed_infill": 55,
-    "speed_wall": 40,
-    "speed_wall_0": 30,
-    "speed_wall_x": 45,
-    "speed_topbottom": 40,
-    "speed_layer_0": 18,
+    "speed_print": 90,
+    "speed_infill": 100,
+    "speed_wall": 90,
+    "speed_wall_0": 75,
+    "speed_wall_x": 90,
+    "speed_topbottom": 80,
+    "speed_layer_0": 30,
     "speed_travel": 150,
     "speed_travel_layer_0": 100,
     "speed_slowdown_layers": 2,
-    "material_print_temperature": 215,
+    "material_print_temperature": 220,
     "material_print_temperature_layer_0": 215,
     "material_bed_temperature": 60,
     "material_bed_temperature_layer_0": 60,
@@ -91,8 +91,6 @@ FLAT = {
     "layer_height_0": 0.3,
     "cool_fan_speed": 100,
     "infill_sparse_density": 100,
-    "speed_wall_0": 25,
-    "speed_topbottom": 30,
     "cool_min_layer_time": 10,
     "adhesion_type": "brim",         # a brim on all parts: the large thin parts stay flat on the bed
     "brim_line_count": 10,

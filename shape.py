@@ -80,14 +80,14 @@ WWSLOT_Z0 = -DEPTH + FLOOR_T + RIB_H + 2   # bottom of the lowest row
 # --- The lid ---
 LID_CLR = 0.25       # gap from the lid skirt to the collar skirt
 LID_SKIRT_T = 1.0    # lid skirt (2 lines): it flexes over the ridge
-SLITS = 16           # slits in the lid skirt: they make 16 fingers
+SLITS = 8            # slits in the lid skirt: 8 wide fingers (about 63 mm). Long wall runs, a firm click
 SLIT_W = 1.0         # width of a slit
 SLIT_TOP = BAND_H - 1.5  # the slits stop 1.5 mm below the lid plate
 LID_IN = SKIRT_O + LID_CLR
 LID_O = LID_IN + LID_SKIRT_T
 LID_T = 1.2          # lid plate thickness (4 layers). Solid in the model, an open grid in the print
 LID_SKIRT_Z0 = -6.0  # bottom of the lid skirt
-SNAP = 0.5           # the bead goes 0.5 mm inside the ridge: the snap interference
+SNAP = 0.6           # the bead goes 0.6 mm inside the ridge: the snap interference (0.5 mm was loose)
 BEAD_APEX = SKIRT_O - SNAP
 VENT_SLOT = 2.0      # width of the air slots in the lid
 VENT_EDGE = 3.0      # the vents stay inside BASKET_IN - VENT_EDGE

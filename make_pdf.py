@@ -96,8 +96,9 @@ SETTINGS = [
                   f"an open grid: no top or bottom skin, lines infill {S.GRID_PITCH} mm apart, connected lines. The "
                   f"openings are {S.GRID_PITCH - 0.5:.1f} mm square. Use these settings. A normal profile prints a "
                   "solid floor, and the brine cannot drain."),
-    ("Speed", "Faster speeds for a functional part: print 70 mm/s, infill 75 mm/s, outer wall 60 mm/s, inner walls "
-              "70 mm/s, top and bottom 70 mm/s, first layer 30 mm/s, minimum layer time 5 s, faster wall accelerations."),
+    ("Speed", "Fast speeds for a functional part: print 90 mm/s, infill 100 mm/s, outer wall 75 mm/s, inner walls "
+              "90 mm/s, top and bottom 80 mm/s, first layer 30 mm/s. The flow stays at 15 mm3/s or less. "
+              "Accelerations 2000 to 3000 mm/s2. PLA at 220 C for the higher flow. Minimum layer time 5 s."),
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
     ("Tools", "One single-edge razor blade with a folded steel spine (1.5 in long, 11/16 to 3/4 in wide, 0.010 in thick; "
               "for example Personna #9 or Stanley 11-515), a flat table, and sandpaper (120 grit)."),
