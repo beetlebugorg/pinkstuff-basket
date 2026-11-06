@@ -128,13 +128,16 @@ def basket():
              + frustum(S.BASKET_IN, z_a, ro - t, z_b)
              + slab(ro - t, z_b - 0.001, S.BAND_H + 1))
     body = outer - inner
-    span = S.JUG_DIA + 2 * S.BASKET_IN + 0.5
+    # The floor ribs: a star of spokes from the centre. The star stops RIB_GAP from the wall, so
+    # each layer of the ribs is 2 islands (the wall and the star) with a short travel between them.
+    span = S.JUG_DIA + 2 * S.BASKET_IN
     zr = -S.DEPTH + S.FLOOR_T - 0.1
     al = (Align.CENTER, Align.CENTER, Align.MIN)
-    ribs = Pos(0, 0, zr) * Box(span, S.RIB_T, S.RIB_H + 0.1, align=al)
-    for x in (-S.CROSS_X, 0.0, S.CROSS_X):
-        ribs += Pos(x, 0, zr) * Box(S.RIB_T, span, S.RIB_H + 0.1, align=al)
-    body += ribs & slab(S.BASKET_IN + 0.2, -S.DEPTH, 0)
+    ribs = None
+    for i in range(S.RIB_SPOKES):
+        rib = Rot(0, 0, 180 / S.RIB_SPOKES * i) * Pos(0, 0, zr) * Box(span, S.RIB_T, S.RIB_H + 0.1, align=al)
+        ribs = rib if ribs is None else ribs + rib
+    body += ribs & slab(S.BASKET_IN - S.RIB_GAP, -S.DEPTH, 0)
     # The floor stays solid in the model. The slicer prints it as an open grid (see GRID_PITCH).
     if S.WSLOT_ROWS:
         body -= wall_slots()[0]

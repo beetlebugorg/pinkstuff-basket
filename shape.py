@@ -10,7 +10,7 @@
 #   groove, so the collar grips walls from about 0.7 to 1.8 mm thick. Above the cut, a 45 deg
 #   seat holds the basket. The outer face has a ridge and a groove for the lid snap.
 # - The basket. A round box with a 45 deg flared rim. The rim sits on the seat of the
-#   collar. The floor prints as an open grid, so the brine drips out. Ribs stiffen the floor.
+#   collar. The floor prints as an open grid, so the brine drips out. A star of ribs stiffens the floor.
 # - The lid. A cap with a skirt and a bead that snaps over the ridge of the collar. The plate
 #   sits on the basket rim. The plate prints as an open grid: air goes in, the pellets stay in.
 #   A pull tab on the skirt lets you pull the lid off. The lid skirt also presses the collar skirt onto the jug.
@@ -55,15 +55,17 @@ SNAP_G = 0.7         # depth of the groove into the skirt (from SKIRT_O)
 # --- The basket ---
 BASKET_CLR = 0.5     # gap from the basket wall to the collar inner face
 BASKET_O = A - BASKET_CLR      # outer face of the basket wall
-BASKET_T = 1.0       # wall (2 lines of 0.5 mm)
+BASKET_T = 0.75      # wall: one line, 0.75 mm wide (one loop each layer: fast, no seam travel)
 BASKET_IN = BASKET_O - BASKET_T
 RIM_CLR = 0.3        # gap from the basket rim to the band bore
 DEPTH = 35.0         # the floor of the basket is 35 mm below the cut: the basket is 40 mm tall
 FLOOR_T = 1.2        # floor thickness (4 layers of 0.3 mm). The model is solid: the slicer prints it as an
                      # open grid (no skin, lines infill at GRID_PITCH, connected). No slot outlines, few retractions
 GRID_PITCH = 2.5     # infill line distance: 0.5 mm lines, 2.0 mm openings (pellets are larger)
-RIB_T = 1.0          # the floor ribs (2 lines, no gap fill)
+RIB_T = 1.0          # the floor ribs (one loop around the star, 2 lines in each spoke)
 RIB_H = 8.0          # height of the ribs above the floor
+RIB_GAP = 2.0        # the rib star stops 2 mm from the wall: each layer is 2 islands, short travels
+RIB_SPOKES = 3       # ribs across the floor, at 60 deg steps (6 spokes from the centre)
 FLOOR_SLOT = 2.0     # width of the drain slots (pellets are larger, about 3 to 8 mm)
 SLOT_PITCH = 3.0     # row pitch (1 mm bars, 2 lines)
 SLOT_EDGE = 1.5      # the slots stay 1.5 mm from the wall
@@ -87,7 +89,8 @@ LID_IN = SKIRT_O + LID_CLR
 LID_O = LID_IN + LID_SKIRT_T
 LID_T = 1.2          # lid plate thickness (4 layers). Solid in the model, an open grid in the print
 LID_SKIRT_Z0 = -6.0  # bottom of the lid skirt
-SNAP = 0.6           # the bead goes 0.6 mm inside the ridge: the snap interference (0.5 mm was loose)
+SNAP = 0.5           # the bead goes 0.5 mm inside the ridge: the snap interference. The slice must not
+                     # expand holes (hole_xy_offset 0): the inner face of the skirt is a hole in each layer
 BEAD_APEX = SKIRT_O - SNAP
 VENT_SLOT = 2.0      # width of the air slots in the lid
 VENT_EDGE = 3.0      # the vents stay inside BASKET_IN - VENT_EDGE

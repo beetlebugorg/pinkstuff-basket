@@ -20,8 +20,8 @@ The brine drips through the open grid of the basket floor and collects in the ju
   of the cartridge, edge first. The PDF shows how to load it.
 - **Collar.** A tapered groove goes over the cut edge of the jug. The edge wedges into it.
   Walls from 0.6 to 2.4 mm fit. A 45° seat above the cut holds the basket.
-- **Basket.** 0.64 L of space (about 560 g of pellets), 40 mm tall. Fill it with 400 g: see "Desiccant" below. The flared rim sits on the seat. A 1 mm wall, an
-  open grid floor (2 mm openings), and four floor ribs. The jug holds 1.1 L of
+- **Basket.** 0.64 L of space (about 560 g of pellets), 40 mm tall. Fill it with 400 g: see "Desiccant" below. The flared rim sits on the seat. A 0.75 mm wall (one line), an
+  open grid floor (2 mm openings), and a star of floor ribs. The jug holds 1.1 L of
   brine below it. Lift it out by the two finger notches in the collar.
 - **Lid.** A bead in the skirt snaps over a ridge on the collar. 8 slits cut the skirt into
   wide fingers (0.6 mm snap, 1.41 % strain in PLA). The skirt also clamps the collar onto the jug.
@@ -69,21 +69,21 @@ The script stops if the fit check, the mesh check, or the support check fails. I
 ## Print
 
 The print times and the filament come from the Printdeck slice (`printdeck_slice.py`): the
-Printdeck slicer with the TAZ Workhorse SE profile `pla-0.30-fast`, fast speeds (walls 75 and 90 mm/s, 220 °C), and white
+Printdeck slicer with the TAZ Workhorse SE profile `pla-0.30-fast`, fast speeds (walls 70 and 80 mm/s, 12 mm³/s at most, 220 °C), and white
 PLA (`roll-5`). The values are for one part. All parts print with a 10-line brim on the
 outside. Peel the brim off after the print.
 
 | Part | Count | Orientation | Filament | Time |
 |---|---|---|---|---|
 | `fit_arc.stl` | 1 | top face on the bed | 2.3 g | 6 min |
-| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 44 g | 1 h 55 min |
+| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 44 g | 1 h 56 min |
 | `jig_cart.stl` (cartridge) | 1 | on its back end | 11 g | 23 min |
-| `collar.stl` | 1 | top face on the bed (upside down) | 20 g | 34 min |
-| `basket.stl` | 1 | floor on the bed | 25 g | 40 min |
+| `collar.stl` | 1 | top face on the bed (upside down) | 22 g | 35 min |
+| `basket.stl` | 1 | floor on the bed | 26 g | 38 min |
 | `lid.stl` | 1 | top face on the bed (upside down) | 14 g | 28 min |
 
-One set (a collar, a basket, and a lid) is 60 g and 1 h 42 min. The tools (the cutting ring
-and the cartridge) are 55 g and 2 h 18 min, once. The `roll-5` white PLA entry is new in
+One set (a collar, a basket, and a lid) is 62 g and 1 h 41 min. The tools (the cutting ring
+and the cartridge) are 55 g and 2 h 19 min, once. The `roll-5` white PLA entry is new in
 `profiles/taz-workhorse-se/cura.json`. It copies the black MatterHackers PLA settings.
 
 ## Desiccant

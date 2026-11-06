@@ -90,14 +90,15 @@ SETTINGS = [
                  "<code>python3 cura/make_profiles.py --install</code> with Cura closed, then pick “Desiccant - …”."),
     ("Material", "PLA, 2.85 mm, 0.5 mm nozzle. Calcium chloride brine does not attack PLA, PETG, or the HDPE jug. "
                  "Keep the brine away from metal."),
-    ("Layers", f"0.3 mm layers (Printdeck profile pla-0.30-fast). Basket: {S.BASKET_T:.1f} mm wall (2 lines), "
-               f"{S.FLOOR_T:.1f} mm floor (4 layers). Lid: {S.LID_T:.1f} mm plate (4 layers). Skirt."),
+    ("Layers", f"0.3 mm layers (Printdeck profile pla-0.30-fast). Basket: {S.BASKET_T:.2f} mm wall (one line), "
+               f"{S.FLOOR_T:.1f} mm floor (4 layers). Lid: {S.LID_T:.1f} mm plate (4 layers). A 10-line brim on the outside. "
+               "Hole expansion off on the collar, the basket, and the lid: their inner faces are holes in each layer."),
     ("Open grid", f"The basket floor and the lid plate are solid in the model. The basket and lid settings print them as "
                   f"an open grid: no top or bottom skin, lines infill {S.GRID_PITCH} mm apart, connected lines. The "
                   f"openings are {S.GRID_PITCH - 0.5:.1f} mm square. Use these settings. A normal profile prints a "
                   "solid floor, and the brine cannot drain."),
-    ("Speed", "Fast speeds for a functional part: print 90 mm/s, infill 100 mm/s, outer wall 75 mm/s, inner walls "
-              "90 mm/s, top and bottom 80 mm/s, first layer 30 mm/s. The flow stays at 15 mm3/s or less. "
+    ("Speed", "Fast speeds for a functional part: print 80 mm/s, infill 80 mm/s, outer wall 70 mm/s, inner walls "
+              "80 mm/s, top and bottom 70 mm/s, first layer and brim 30 mm/s. The flow stays at 12 mm3/s or less. "
               "Accelerations 2000 to 3000 mm/s2. PLA at 220 C for the higher flow. Minimum layer time 5 s."),
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
     ("Tools", "One single-edge razor blade with a folded steel spine (1.5 in long, 11/16 to 3/4 in wide, 0.010 in thick; "
@@ -288,7 +289,7 @@ def how_page(n):
   </div>
   <div class="fig"><img src="{img('section')}" style="max-height:90mm"></div>
   <p style="font-size:10pt;color:#444">The section through the middle. The basket holds {FIT['pellet_l']:.1f} L of pellets. The
-  space below the basket holds {FIT['brine_l']:.1f} L of brine (cut at {S.CUT_H:.0f} mm). Four ribs stiffen the floor.
+  space below the basket holds {FIT['brine_l']:.1f} L of brine (cut at {S.CUT_H:.0f} mm). A star of ribs (6 spokes) stiffens the floor.
   The floor prints as an open grid of connected lines, {S.GRID_PITCH} mm apart: one path for each layer, with no small holes.</p>
   {foot(n)}
 </section>"""

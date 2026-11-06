@@ -68,12 +68,12 @@ COMMON = {
 LAYER = {
     "layer_height": 0.2,
     "top_bottom_thickness": 1.2,
-    "speed_print": 90,
-    "speed_infill": 100,
-    "speed_wall": 90,
-    "speed_wall_0": 75,
-    "speed_wall_x": 90,
-    "speed_topbottom": 80,
+    "speed_print": 80,
+    "speed_infill": 80,
+    "speed_wall": 80,
+    "speed_wall_0": 70,
+    "speed_wall_x": 80,
+    "speed_topbottom": 70,
     "speed_layer_0": 30,
     "speed_travel": 150,
     "speed_travel_layer_0": 100,
@@ -146,9 +146,9 @@ def write(path, name, quality_type, values, position=None):
 # The collar and the lid: thin walls, all wall. The lid skirt (1 mm) is 2 lines.
 # The basket and the lid: no skin, so the solid floor and the solid lid plate print as an open
 # grid of connected lines (GRID_PITCH apart). The walls are all wall.
-BASKET = {**FLAT, "wall_thickness": S.BASKET_T, "top_bottom_thickness": 0, "infill_pattern": "lines", "infill_sparse_density": 50 / S.GRID_PITCH, "zig_zaggify_infill": True}
-COLLAR = {**FLAT, "wall_thickness": 1.0, "infill_sparse_density": 40, "infill_pattern": "grid"}
-LID = {**FLAT, "wall_thickness": S.LID_SKIRT_T, "top_bottom_thickness": 0, "infill_pattern": "lines", "infill_sparse_density": 50 / S.GRID_PITCH, "zig_zaggify_infill": True}
+BASKET = {**FLAT, "hole_xy_offset": 0, "wall_thickness": S.BASKET_T, "top_bottom_thickness": 0, "infill_pattern": "lines", "infill_sparse_density": 50 / S.GRID_PITCH, "zig_zaggify_infill": True}
+COLLAR = {**FLAT, "hole_xy_offset": 0, "wall_thickness": 1.0, "infill_sparse_density": 40, "infill_pattern": "grid"}
+LID = {**FLAT, "hole_xy_offset": 0, "wall_thickness": S.LID_SKIRT_T, "top_bottom_thickness": 0, "infill_pattern": "lines", "infill_sparse_density": 50 / S.GRID_PITCH, "zig_zaggify_infill": True}
 
 PROFILES = [
     profile("Collar", "Collar", "collar.stl", COLLAR),
