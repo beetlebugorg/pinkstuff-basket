@@ -4,11 +4,18 @@
  "note": "tape around the middle of the sample jug",
  "B1_blade_t_mm": 0.25,
  "B2_spine_t_mm": 1.0,
- "B3_blade_l_mm": 38.9,
- "B3_spine_l_mm": 39.7,
+ "B3_blade_l_mm": 38.86,
+ "B3_spine_l_mm": 39.65,
  "blade_note": "the user's single-edge razor blade",
- "B3_blade_d_mm": 19.4,
+ "B3_blade_d_mm": 19.37,
  "hole_w_mm": 2.71,
  "hole_h_mm": 6.0,
- "hole_centre_from_spine_mm": 10.5
+ "hole_centre_from_spine_mm": 10.5,
+ "S0_spine_d_mm": 7.19,
+ "S0_spine_front_to_edge_mm": 12.77,
+ "blade_note_2": "2026-11-06 recheck. 7.19 + 12.77 = 19.96, but the full width is 19.37: S1 and S2 recheck the spine depth and the hole position",
+ "S1_spine_d_mm": 6.85,
+ "S1_note": "spine back to the front edge of the folded spine, on the blade face, near one end",
+ "S2_spine_back_to_hole_mm": 7.7,
+ "S2_note": "spine back to the end of the hole nearest the spine; hole centre 7.70 + 3.00 = 10.70"
 }

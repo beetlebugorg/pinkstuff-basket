@@ -25,16 +25,27 @@ parts:
     material: roll-5
     settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 80, speed_infill: 80, speed_wall_0: 70, speed_wall_x: 80, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, skirt_brim_speed: 30, acceleration_print: 3000, acceleration_infill: 3000, acceleration_wall_0: 2000, acceleration_wall_x: 2500, acceleration_topbottom: 2500, acceleration_skirt_brim: 2500, material_print_temperature: 220, cool_min_layer_time: 5}
     files: [stl/jig.stl]
-  - name: Blade cartridge
+  - name: Cartridge base
     group: Tools
     description: >-
-      Holds a single-edge razor blade. It slides on the shelf of the cutting ring, and the blade goes through the jug
-      wall. An M2.5 x 12 socket head screw goes into a heat-set insert in the shelf and clamps the cartridge and the blade. Print it on its back end.
+      The base of the blade cartridge. It sits on the shelf of the cutting ring. The spine of the razor blade sits in a
+      pocket on its top, and the pocket ends stop the blade. Print it on its back end.
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
     settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 80, speed_infill: 80, speed_wall_0: 70, speed_wall_x: 80, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, skirt_brim_speed: 30, acceleration_print: 3000, acceleration_infill: 3000, acceleration_wall_0: 2000, acceleration_wall_x: 2500, acceleration_topbottom: 2500, acceleration_skirt_brim: 2500, material_print_temperature: 220, cool_min_layer_time: 5}
     files: [stl/jig_cart.stl]
+  - name: Clamp plate
+    group: Tools
+    description: >-
+      Goes on top of the cartridge base. The M2.5 x 12 screw goes through the clamp plate and the base, behind the
+      spine, into the heat-set insert in the shelf. The screw squeezes the spine between the two plates. Print it
+      upside down, top face on the bed.
+    printer: taz
+    profile: taz-workhorse-se/pla-0.30-fast
+    material: roll-5
+    settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 80, speed_infill: 80, speed_wall_0: 70, speed_wall_x: 80, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, skirt_brim_speed: 30, acceleration_print: 3000, acceleration_infill: 3000, acceleration_wall_0: 2000, acceleration_wall_x: 2500, acceleration_topbottom: 2500, acceleration_skirt_brim: 2500, material_print_temperature: 220, cool_min_layer_time: 5}
+    files: [stl/jig_clamp.stl]
   - name: Fit test arc
     group: Tools
     description: >-
@@ -103,23 +114,25 @@ assemblies:
         explode: [0, 0, 3]
   - name: Cutting ring
     description: >-
-      The cutting ring, the blade cartridge on its shelf, the M2.5 heat-set insert, the M2.5 x 12 lock screw, and a single-edge razor blade
-      (1.5 in long, 11/16 to 3/4 in wide, with a folded steel spine). The blade slides into the back end of the
-      cartridge.
+      The cutting ring, the cartridge base and the clamp plate on its shelf, the M2.5 heat-set insert, the M2.5 x 12
+      screw, and a single-edge razor blade (1.5 in long, 3/4 in wide, with a folded steel spine). The screw squeezes
+      the spine between the base and the clamp plate.
     items:
       - part: Cutting ring
         file: build/mesh/jig.stl
-      - part: Blade cartridge
+      - part: Cartridge base
         file: build/mesh/jig_cart.stl
-        explode: [1, 0, 0]
       - name: Razor blade (single edge, 1.5 in)
         file: build/mesh/blade.stl
         color: "#b8bcc0"
-        explode: [2, 0, 0]
+        explode: [0, 0, 1]
+      - part: Clamp plate
+        file: build/mesh/jig_clamp.stl
+        explode: [0, 0, 2]
       - name: M2.5 heat-set insert
         file: build/mesh/insert.stl
         color: "#c9a74a"
       - name: M2.5 x 12 socket head screw
         file: build/mesh/screw.stl
         color: "#55595e"
-        explode: [0, 0, 1]
+        explode: [0, 0, 3]

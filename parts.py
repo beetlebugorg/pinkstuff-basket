@@ -198,13 +198,14 @@ def jig_x():
     a = math.radians(S.YAW)
     uh = (math.sin(a), math.cos(a))
     vh = (math.cos(a), -math.sin(a))
-    o = (R - S.JUG_T / 2, S.BLADE_D * math.sin(a) / 2)       # centres the blade on Y = 0
+    # The ring is printed: its layout (o, pin) uses JIG_BLADE_D, not the newer blade values.
+    o = (R - S.JUG_T / 2, S.JIG_BLADE_D * math.sin(a) / 2)   # centres the blade on Y = 0
     hd = S.SCREW_CLR / 2 ** 0.5                                 # half the diagonal of the screw hole
-    # The screw shank touches the back of the spine with a 0.05 mm gap.
-    pv = S.BLADE_D + 0.05 + S.SCREW_D / 2
+    # The screw shank is 0.05 mm behind the back of the spine (of a JIG_BLADE_D blade).
+    pv = S.JIG_BLADE_D + 0.05 + S.SCREW_D / 2
     pin = (o[0] + vh[0] * pv, o[1] + vh[1] * pv)
     corners = [(o[0] + uh[0] * u + vh[0] * v, o[1] + uh[1] * u + vh[1] * v)
-               for u in (-S.SPINE_L / 2, S.SPINE_L / 2) for v in (0, S.BLADE_D)]
+               for u in (-39.7 / 2, 39.7 / 2) for v in (0, S.JIG_BLADE_D)]
     out = max(max(c[0] for c in corners) + 3.0, pin[0] + hd + 4.0)
     return {"R": R, "ri": ri, "ro": ri + S.RING_T, "a": a, "uh": uh, "vh": vh, "o": o, "pin": pin, "pv": pv,
             "hd": hd, "out": out, "top": S.CUT_H - S.CART_LOW, "corners": corners}
@@ -280,32 +281,54 @@ def brace(k, a, sgn):
     return pl * Box(length + 6.0, S.BRACE_W, S.BRACE_T)
 
 
-def cartridge():
-    """The blade cartridge, pushed in: it sits on the ring top and the shelf. The cheeks go down
-    beside the shelf. The blade slot is at YAW. It is open at the back and at the -Y side, so the
-    blade goes in from the back, edge first."""
+def cart_base():
+    """The base of the cartridge: it sits on the ring top and the shelf. The cheeks go down beside
+    the shelf. The spine of the blade sits in a pocket on its top. The pocket ends stop the blade
+    along the edge. The pocket is open at the back, and the screw stops the spine there."""
     k = jig_x()
     zt = k["top"]
-    body = box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zt, zt + S.CART_H)
+    z1 = S.CUT_H - S.SPINE_T / 2 + S.SPINE_POCKET       # the top face of the base
+    body = box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zt, z1)
     y0 = S.SHELF_W / 2 + S.CART_CLR
     for sgn in (1, -1):
         ya, yb = sorted((sgn * y0, sgn * (y0 + S.CHEEK_T)))
         body += box(k["ro"] + 1.0, k["out"], ya, yb, zt - S.SHELF_T, zt + 0.01)
     body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
-    hu = max(S.BLADE_L, S.SPINE_L) / 2 + 0.3
-    st = S.BLADE_T + S.SLOT_CLR
-    body -= blade_frame(k, box(-30, 80, -hu, hu, -st / 2, st / 2))
-    # The spine pocket. Its front end is a 45 deg step, so it prints with no support.
-    pt = S.SPINE_T + S.POCKET_CLR
-    v0, h, d = S.BLADE_D - S.SPINE_D - 0.05, pt / 2, (pt - st) / 2
-    prof = Polygon((v0 - d, -st / 2), (v0, -h), (80, -h), (80, h), (v0, h), (v0 - d, st / 2), align=None)
+    # The pocket floor goes from the front edge of the spine to behind the screw. Its front and
+    # back walls are at 45 deg, so the base prints on its back end with no support.
+    hu = S.SPINE_L / 2 + S.SPINE_END_CLR
+    v0 = S.BLADE_D - S.SPINE_D - S.SPINE_FRONT_CLR
+    v1 = k["pv"] + S.SCREW_D / 2 + 1.0
+    zf, zc = -S.SPINE_T / 2, 3.0
+    prof = Polygon((v0, zf), (v1, zf), (v1 + zc - zf, zc), (v0 - (zc - zf), zc), align=None)
     body -= blade_frame(k, extrude(Plane.XZ * prof, hu, both=True))
-    body -= diamond(S.SCREW_CLR, zt - 1, zt + S.CART_H + 1, *k["pin"])
+    body -= diamond(S.SCREW_CLR, zt - 1, z1 + 1, *k["pin"])
+    return body
+
+
+def cart_clamp():
+    """The clamp plate: it presses the spine down into the pocket of the base. A heel behind the
+    screw keeps the plate level. A lip at each side goes down over the sides of the base."""
+    k = jig_x()
+    z1 = S.CUT_H - S.SPINE_T / 2 + S.SPINE_POCKET
+    z2 = S.CUT_H + S.SPINE_T / 2                          # the bottom face: on the spine
+    ztop = k["top"] + S.CART_H
+    w = S.CART_W / 2 + S.LIP_CLR
+    body = box(k["R"], k["out"], -w - S.LIP_T, w + S.LIP_T, z2, ztop)
+    # The heel: behind the screw, clear of the spine (2 mm behind the screw axis + its radius).
+    zh = z1 + S.HEEL_SHORT
+    heel = blade_frame(k, box(k["pv"] + S.SCREW_D / 2 + 2.0, 80, -60, 60, zh - S.CUT_H, z2 - S.CUT_H + 0.01))
+    body += heel & box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zh, z2 + 0.01)
+    for sgn in (1, -1):
+        ya, yb = sorted((sgn * w, sgn * (w + S.LIP_T)))
+        body += box(k["ro"] + 1.0, k["out"], ya, yb, z2 - S.LIP_H, ztop)
+    body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
+    body -= Pos(*k["pin"], z2 - 1) * Cylinder_(S.SCREW_CLR / 2, S.CART_H + 2)
     # The turn arrow on the top: the near side of the jug moves this way (-Y).
-    zt2, x = zt + S.CART_H, k["ri"] + 5.5
+    x = k["ri"] + 5.5
     tip = (x, -9.0)
     for p0, p1 in (((x, 9.0), tip), ((x - 4.0, -5.0), tip), ((x + 4.0, -5.0), tip)):
-        body -= v_groove(p0, p1, zt2, S.ARROW_W)
+        body -= v_groove(p0, p1, ztop, S.ARROW_W)
     return body
 
 
@@ -325,13 +348,12 @@ def screw():
     return sc + Pos(px, py, zt) * Cylinder_(S.SCREW_HEAD_D / 2, S.SCREW_HEAD_H)
 
 
-def blade(width=S.BLADE_D, gap=0.0):
-    """A single-edge razor blade in the cartridge, edge toward the jug, at YAW. width: the blade
-    from the edge to the back of the spine. A narrow blade sits back against the pin (gap: the
-    extra move back)."""
+def blade(gap=0.0):
+    """The razor blade in the cartridge, edge toward the jug, at YAW. gap: a move back (+v)."""
     k = jig_x()
     hu = S.BLADE_L / 2
-    v0 = S.BLADE_D - width + gap
+    width = S.BLADE_D
+    v0 = gap
     b = box(v0, v0 + width - S.SPINE_D, -hu, hu, -S.BLADE_T / 2, S.BLADE_T / 2)
     b += box(v0 + width - S.SPINE_D, v0 + width, -S.SPINE_L / 2, S.SPINE_L / 2, -S.SPINE_T / 2, S.SPINE_T / 2)
     hole = Pos(v0 + width - S.HOLE_C, 0, -1) * SlotOverall(S.HOLE_H, S.HOLE_W)

@@ -78,7 +78,8 @@ N_SETS = 1
 
 PRINTS = [
     ("jig", "White", 1, "Upside down, the ring top on the bed. Print it once for all the jugs."),
-    ("jig_cart", "White", 1, "On its back end, the open end of the blade slot on the bed."),
+    ("jig_cart", "White", 1, "On its back end (the flat end) on the bed."),
+    ("jig_clamp", "White", 1, "Upside down, the top face with the arrow on the bed."),
     ("fit_arc", "White", 1, "Top face on the bed. Print this first. It tests the groove and the diameter on the jug."),
     ("collar", "White", N_SETS, "Top face on the bed (upside down). The groove opens to the top."),
     ("basket", "White", N_SETS, "Floor on the bed. The rim flares out at 45°."),
@@ -108,31 +109,30 @@ SETTINGS = [
 ]
 
 STEPS = [
-    ("blade", "Load the blade", ["cartridge", "razor blade", "2 mm hex key"], [
-        "Use a single-edge razor blade with a folded steel spine: 1.5 in long, 11/16 to 3/4 in wide, 0.009 in thick.",
+    ("blade", "Load the blade", ["cartridge base", "clamp plate", "razor blade"], [
+        "Use a single-edge razor blade with a folded steel spine: 1.5 in long, 3/4 in wide, 0.009 in thick.",
         "Hold the blade by the spine. Point the edge away from you.",
-        "Find the back end of the cartridge: the slot is open at the back and at one side. The thin slot is for "
-        "the blade, the thick part of the slot is for the spine.",
-        "Slide the blade into the open slot, edge first, flat, with the spine at the back. The slot is at an angle: "
-        "follow it.",
-        "Push the spine in with the short end of the hex key until it stops. The spine stops at the step in the slot.",
-        f"Look at the front of the cartridge (the curved end). The blade is at {S.YAW:.0f}°. Its tip comes out about 10 mm.",
-        "Look down the screw hole. The hole must be clear behind the spine. If the spine covers it, push the blade in more.",
-    ], "The spine is thicker than the blade slot, so the blade goes in only one way: edge first, toward the jug. "
-       "To take the blade out, remove the screw. Hold the cartridge over a table, back end down. "
-       "The blade slides out. Tap the cartridge if the blade does not move."),
+        "Put the base on the table, pocket up. The pocket is a shallow channel, at an angle across the top.",
+        "Put the spine down into the pocket. The edge points to the curved front end. The blade lies flat.",
+        "Push the blade forward until the front edge of the spine touches the front wall of the pocket. The ends "
+        "of the spine fit between the ends of the pocket.",
+        "Look down the screw hole. The hole must be clear behind the spine.",
+        "Put the clamp plate on top, arrow up. Its side lips go down over the sides of the base.",
+        f"Look at the front (the curved end). The blade is at {S.YAW:.0f}°. Its tip comes out about 10 mm.",
+    ], "Keep the base and the clamp plate together with your fingers until the screw is in. "
+       "To take the blade out, remove the screw and lift off the clamp plate."),
     ("jig", "Cut the jug", ["cutting ring", "loaded cartridge", "M2.5 x 12 screw", "2 mm hex key", "jug", "flat table"], [
         "Empty the jug. Rinse it with water and let it dry.",
         "One time only: put the insert on the hole in the shelf. Push it in with the soldering iron at 220 °C until it is "
         "flush with the shelf top. Let it cool.",
         "Stand the cutting ring on a flat table. Put the jug down into the ring from above.",
-        "Put the loaded cartridge on the shelf, behind the ring, edge toward the jug. The side cheeks go down "
+        "Put the loaded cartridge on the shelf, behind the ring, edge toward the jug. The side cheeks of the base go down "
         "beside the shelf.",
         "Push the back end of the cartridge with your thumb. The tip of the angled blade goes through the wall first.",
-        "Put the screw through the cartridge into the insert. Tighten it until the cartridge is tight on the shelf. "
-        "The screw clamps the cartridge, and its shank stops the blade. You do not have to hold the cartridge.",
+        "Put the screw through the clamp plate and the base into the insert. The screw goes in just behind the spine. "
+        "Tighten it firmly. The screw squeezes the spine between the two plates, and the blade cannot move.",
         "Turn the jug by its handle CLOCKWISE (seen from above), one full turn. The arrow on the "
-        "cartridge shows the way the near side of the jug moves. The blade cuts a level line.",
+        "clamp plate shows the way the near side of the jug moves. The blade cuts a level line.",
         "Remove the screw. Pull the cartridge back. Lift off the top half, then lift the jug out.",
         f"Sand the cut edge flat and remove the burrs. The cut is {S.CUT_H:.0f} mm above the table.",
     ], f"The blade is at {S.YAW:.0f}° to the wall, so the wall meets the sharp edge and the edge slices it. "
@@ -176,12 +176,12 @@ ADJUST = [
      "Turn the jug clockwise. Change YAW by 5: a larger angle goes deeper, a smaller angle slices more."),
     ("The jug does not go into the cutting ring, or it is loose in it", "RING_CLR, JUG_DIA", f"{S.RING_CLR:.1f}, {S.JUG_DIA:.1f}",
      "Check JUG_DIA (MEASURE.md, J1). Change RING_CLR by 0.2."),
-    ("The edge does not come out of the front, and the screw does not go in", "SLOT_CLR, POCKET_CLR", f"{S.SLOT_CLR:.2f}, {S.POCKET_CLR:.2f}",
-     "The slot printed closed. Do not force the screw. Add 0.2 to SLOT_CLR, or 0.2 to POCKET_CLR if the spine sticks."),
+    ("The spine does not go into the pocket of the base", "SPINE_END_CLR, SPINE_FRONT_CLR", f"{S.SPINE_END_CLR:.2f}, {S.SPINE_FRONT_CLR:.2f}",
+     "Add 0.1 to SPINE_END_CLR. Reprint the base only."),
     ("The insert is loose in the shelf, or it does not go in", "INSERT_D", f"{S.INSERT_D:.1f}",
      "Set INSERT_D to the hole size on the data sheet of your insert. Reprint the ring."),
-    ("The blade is loose in the slot", "SLOT_CLR", f"{S.SLOT_CLR:.2f}",
-     "Subtract 0.1 from SLOT_CLR."),
+    ("The blade moves when the screw is tight", "SPINE_POCKET", f"{S.SPINE_POCKET:.2f}",
+     "Subtract 0.1 from SPINE_POCKET: the plates then squeeze the spine more. Reprint the base only."),
     ("The edge stops at the mouth of the groove", "JUG_T, G_HALF_MOUTH", f"{S.JUG_T:.1f}, {S.G_HALF_MOUTH:.1f}",
      "Measure the wall (J2). Set JUG_T to the value. For a wall over 2.2 mm, add 0.3 to G_HALF_MOUTH."),
     ("The collar is loose on a correct jug size", "G_HALF_ROOF", f"{S.G_HALF_ROOF:.1f}",
@@ -215,7 +215,7 @@ def cover():
   circumference on a sample jug. The {S.JUG_T:.1f} mm wall is an estimate.
   Print the fit test arc first. <code>MEASURE.md</code> lists the measurements to take.</div>
   <div class="need"><div class="chip"><span class="sw" style="background:#f4f4f2;border:0.3mm solid #999"></span>White PLA</div>
-    <div class="chip">{total} g and {hours} for each jug</div><div class="chip">cutting ring {round(sum(FILAMENT[n]['grams'] for n in ('jig', 'jig_cart')))} g, once</div><div class="chip">No supports</div><div class="chip">One M2.5 x 12 screw</div></div>
+    <div class="chip">{total} g and {hours} for each jug</div><div class="chip">cutting ring {round(sum(FILAMENT[n]['grams'] for n in ('jig', 'jig_cart', 'jig_clamp')))} g, once</div><div class="chip">No supports</div><div class="chip">One M2.5 x 12 screw</div></div>
   {foot(1)}
 </section>"""
 

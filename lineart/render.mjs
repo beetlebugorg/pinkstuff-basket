@@ -15,9 +15,9 @@ const MANIFEST = JSON.parse(fs.readFileSync(path.join(HERE, "build", "manifest.j
 
 // Fill type for each material: printed, bought, dark, or clear.
 const FINISH = { pla: "print", jug: "clear", steel: "buy" };
-const LABEL = { collar: "Collar", basket: "Basket", lid: "Lid", jug: "Jug (cut)", jig: "Cutting ring", jig_cart: "Cartridge", screw: "M2.5 screw", insert: "Insert", blade: "Razor blade" };
+const LABEL = { collar: "Collar", basket: "Basket", lid: "Lid", jug: "Jug (cut)", jig: "Cutting ring", jig_cart: "Cartridge base", jig_clamp: "Clamp plate", screw: "M2.5 screw", insert: "Insert", blade: "Razor blade" };
 
-const PRINTED = ["collar", "basket", "lid", "fit_arc", "jig", "jig_cart"];
+const PRINTED = ["collar", "basket", "lid", "fit_arc", "jig", "jig_cart", "jig_clamp"];
 const ISO = [1.2, -1.6, 1.0];         // from the front right, above
 const SIDE = [0.02, -1, 0.04];        // the section, from -Y
 const PRINT_VIEW = [1, -1.2, 0.9];
@@ -32,9 +32,9 @@ const SHOTS = {
   collar: { show: ["collar", "jug"], focus: ["collar"], explode: { collar: [0, 0, 50] }, camera: ISO },
   basket: { show: ["collar", "basket", "jug"], focus: ["basket"], explode: { basket: [0, 0, 110] }, camera: ISO },
   lid: { show: ALL, focus: ["lid"], explode: { lid: [0, 0, 50] }, camera: ISO },
-  jig: { show: ["jig", "jig_cart", "screw", "insert", "blade", "jug_full"], focus: ["jig", "jig_cart"], explode: {}, camera: [1.4, -1.1, 0.8] },
-  blade: { show: ["jig_cart", "screw", "blade"], focus: ["jig_cart", "blade", "screw"],
-           explode: { blade: [30.3, -17.5, 0], screw: [0, 0, 30] }, camera: [1.0, -1.4, 1.1] },
+  jig: { show: ["jig", "jig_cart", "jig_clamp", "screw", "insert", "blade", "jug_full"], focus: ["jig", "jig_cart", "jig_clamp"], explode: {}, camera: [1.4, -1.1, 0.8] },
+  blade: { show: ["jig_cart", "jig_clamp", "screw", "blade"], focus: ["jig_cart", "jig_clamp", "blade", "screw"],
+           explode: { blade: [0, 0, 12], jig_clamp: [0, 0, 28], screw: [0, 0, 50] }, camera: [1.0, -1.4, 1.1] },
   section: { show: SEC, focus: ["sec_collar", "sec_basket", "sec_lid"], explode: {}, camera: SIDE,
              labels: { sec_collar: "", sec_basket: "", sec_lid: "", sec_jug: "" } },
   detail: { show: DET, focus: ["det_collar", "det_basket", "det_lid"], explode: {}, camera: SIDE,

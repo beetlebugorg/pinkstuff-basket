@@ -98,30 +98,37 @@ TAB_W = 30.0         # pull tab at +Y, at the bottom of the skirt
 TAB_OUT = 3.0        # the tab goes 3 mm out, at 45 deg
 
 # --- Cutting collar: a ring on three legs that holds a razor blade at CUT_H ---
-# Stand the ring on a flat table. Put the jug into the ring from above. Put the blade into the
-# cartridge, push the cartridge in on the shelf (the blade goes through the jug wall), and drop
-# in the pin. The pin locks the blade in the cartridge and the cartridge on the shelf. Turn the
-# jug in the ring. The ring and the legs print upside down, the cartridge on its back end.
+# Stand the ring on a flat table. Put the jug into the ring from above. The cartridge is two
+# plates: the base sits on the shelf, and the blade spine sits in a pocket on the base. The
+# clamp plate goes on top. The M2.5 screw goes through both plates, behind the spine, into the
+# insert in the shelf. The screw squeezes the spine between the plates. Turn the jug in the
+# ring. The ring prints upside down, the base on its back end, the clamp plate upside down.
+# The ring is printed: its layout uses JIG_BLADE_D. Do not change the ring values.
 JUG_H = 260.0        # ESTIMATE: height of the full jug body (the context model only)
-BLADE_L = 38.9       # MEASURED: single-edge razor blade, length of the edge
-BLADE_D = 19.4       # MEASURED: from the edge to the back of the spine
-BLADE_D_MIN = 17.5   # a narrower blade also fits: 11/16 in (Stanley 11-515 type)
+BLADE_L = 38.86      # MEASURED: single-edge razor blade, length of the edge
+BLADE_D = 19.37      # MEASURED: from the edge to the back of the spine
+JIG_BLADE_D = 19.4   # the blade width in the layout of the printed ring (the first measurement). Keep it
 HOLE_W = 2.71        # MEASURED: the slot hole in the middle of the blade, across
 HOLE_H = 6.00        # MEASURED: its length, from the edge toward the spine (round ends)
-HOLE_C = 10.5        # MEASURED: its centre, from the back of the spine
+HOLE_C = 10.70       # MEASURED: its centre, from the back of the spine (7.70 to the near end + 3.00)
 BLADE_T = 0.25       # MEASURED: blade thickness
 SPINE_T = 1.0        # MEASURED: thickness of the folded steel spine
-SPINE_L = 39.7       # MEASURED: length of the spine (longer than the edge)
-SPINE_D = 5.5        # ESTIMATE: depth of the spine
-SLOT_CLR = 0.75      # the blade slot is BLADE_T + SLOT_CLR thick (1.0 mm). A 0.6 mm slot closes up in the print
-POCKET_CLR = 0.5     # the spine pocket is SPINE_T + POCKET_CLR thick (1.5 mm)
+SPINE_L = 39.65      # MEASURED: length of the spine (longer than the edge)
+SPINE_D = 6.85       # MEASURED: depth of the spine, from its back to its front edge
+SPINE_POCKET = 0.25  # the spine sits this deep in a pocket in the base. The blade face clears the base by 0.125 mm
+SPINE_END_CLR = 0.15 # gap at each end of the spine pocket: the pocket ends stop the blade along the edge
+SPINE_FRONT_CLR = 0.3  # gap from the front edge of the spine to the front wall of the pocket
+HEEL_SHORT = 0.1     # the heel of the clamp plate is 0.1 mm short: the plate presses the spine first
+LIP_H = 2.5          # the clamp plate has a lip at each side, down over the sides of the base
+LIP_T = 1.6
+LIP_CLR = 0.2
 RING_CLR = 0.6       # gap from the ring to the jug, on each side
 RING_T = 3.0         # radial wall of the ring
 RING_H = 8.0         # height of the ring; its top is CART_LOW below CUT_H
 YAW = 30.0           # the blade edge is at 30 deg to the jug wall (seen from above): the deep tip
                      # pierces the wall, then the wall crosses the edge at the middle of the blade
 CART_LOW = 4.0       # the blade is 4 mm above the bottom of the cartridge (the shelf top)
-CART_H = 8.0         # height of the cartridge
+CART_H = 8.0         # height of the cartridge: the base and the clamp plate, with the spine between them
 CART_W = 48.0        # width of the cartridge (the angled blade spans 43 mm)
 CART_CLR = 0.3       # gap from the cheeks of the cartridge to the shelf
 CHEEK_T = 2.4        # the cheeks go down beside the shelf and guide the cartridge
