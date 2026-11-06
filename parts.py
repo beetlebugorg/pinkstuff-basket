@@ -4,7 +4,7 @@ A horizontal size is an offset o from the outer face of the jug (see shape.py)."
 
 import math
 
-from build123d import (Align, Axis, Box, Circle, Plane, Polygon, Pos, Rectangle, Rot, Sketch, SlotOverall,
+from build123d import (Align, Axis, Box, Circle, Cone, Plane, Polygon, Pos, Rectangle, Rot, Sketch, SlotOverall,
                        extrude, loft, revolve)
 
 import shape as S
@@ -281,49 +281,60 @@ def brace(k, a, sgn):
     return pl * Box(length + 6.0, S.BRACE_W, S.BRACE_T)
 
 
+def blade_hole_xy(k):
+    """The centre of the slot hole in the blade, in the world (the blade screw axis)."""
+    vb = S.BLADE_D - S.HOLE_C
+    return (k["o"][0] + k["vh"][0] * vb, k["o"][1] + k["vh"][1] * vb)
+
+
 def cart_base():
-    """The base of the cartridge: it sits on the ring top and the shelf. The cheeks go down beside
-    the shelf. The spine of the blade sits in a pocket on its top. The pocket ends stop the blade
-    along the edge. The pocket is open at the back, and the screw stops the spine there."""
+    """The base of the cartridge. It sits on the ring top and the shelf. The cheeks go down beside
+    the shelf. The top is flat: the blade lies on it. A V-groove takes the lower half of the spine.
+    An insert under the blade hole takes the blade screw. The lock screw goes through it into the
+    insert in the shelf. The base prints upside down (the top on the bed)."""
     k = jig_x()
     zt = k["top"]
-    z1 = S.CUT_H - S.SPINE_T / 2 + S.SPINE_POCKET       # the top face of the base
+    z1 = S.CUT_H - S.BLADE_T / 2                          # the top face: the blade lies on it
     body = box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zt, z1)
     y0 = S.SHELF_W / 2 + S.CART_CLR
     for sgn in (1, -1):
         ya, yb = sorted((sgn * y0, sgn * (y0 + S.CHEEK_T)))
         body += box(k["ro"] + 1.0, k["out"], ya, yb, zt - S.SHELF_T, zt + 0.01)
     body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
-    # The pocket floor goes from the front edge of the spine to behind the screw. Its front and
-    # back walls are at 45 deg, so the base prints on its back end with no support.
-    hu = S.SPINE_L / 2 + S.SPINE_END_CLR
-    v0 = S.BLADE_D - S.SPINE_D - S.SPINE_FRONT_CLR
-    v1 = k["pv"] + S.SCREW_D / 2 + 1.0
-    zf, zc = -S.SPINE_T / 2, 3.0
-    prof = Polygon((v0, zf), (v1, zf), (v1 + zc - zf, zc), (v0 - (zc - zf), zc), align=None)
-    body -= blade_frame(k, extrude(Plane.XZ * prof, hu, both=True))
-    body -= diamond(S.SCREW_CLR, zt - 1, z1 + 1, *k["pin"])
+    # The V-groove for the spine: 45 deg faces, so the base prints upside down with no support.
+    v0 = S.BLADE_D - S.SPINE_D - S.GROOVE_CLR
+    v1 = S.BLADE_D + S.GROOVE_CLR
+    zg = z1 - S.CUT_H + 0.01
+    prof = Polygon((v0, zg), (v1, zg), ((v0 + v1) / 2, zg - (v1 - v0) / 2), align=None)
+    body -= blade_frame(k, extrude(Plane.XZ * prof, 60, both=True))
+    # The insert for the blade screw: the hole goes through, so the melted PLA can flow out.
+    hx, hy = blade_hole_xy(k)
+    body -= Pos(hx, hy, zt - 1) * Cylinder_(S.INSERT_D / 2, S.CART_LOW + 2)
+    # The lock screw goes through the base into the insert in the shelf.
+    body -= Pos(*k["pin"], zt - 1) * Cylinder_(S.SCREW_CLR / 2, S.CART_LOW + 2)
     return body
 
 
 def cart_clamp():
-    """The clamp plate: it presses the spine down into the pocket of the base. A heel behind the
-    screw keeps the plate level. A lip at each side goes down over the sides of the base."""
+    """The clamp plate. It presses the blade flat on the base. A slot in its bottom face fits the
+    spine, so the blade goes in one way only. The blade screw goes through it and the blade hole
+    into the insert in the base. The lock screw goes through it and the base into the shelf. A lip at each side goes down over the sides of the base. The plate
+    prints upside down."""
     k = jig_x()
-    z1 = S.CUT_H - S.SPINE_T / 2 + S.SPINE_POCKET
-    z2 = S.CUT_H + S.SPINE_T / 2                          # the bottom face: on the spine
+    z2 = S.CUT_H + S.BLADE_T / 2                          # the bottom face: on the blade
     ztop = k["top"] + S.CART_H
     w = S.CART_W / 2 + S.LIP_CLR
     body = box(k["R"], k["out"], -w - S.LIP_T, w + S.LIP_T, z2, ztop)
-    # The heel: behind the screw, clear of the spine (2 mm behind the screw axis + its radius).
-    zh = z1 + S.HEEL_SHORT
-    heel = blade_frame(k, box(k["pv"] + S.SCREW_D / 2 + 2.0, 80, -60, 60, zh - S.CUT_H, z2 - S.CUT_H + 0.01))
-    body += heel & box(k["R"], k["out"], -S.CART_W / 2, S.CART_W / 2, zh, z2 + 0.01)
     for sgn in (1, -1):
         ya, yb = sorted((sgn * w, sgn * (w + S.LIP_T)))
         body += box(k["ro"] + 1.0, k["out"], ya, yb, z2 - S.LIP_H, ztop)
     body -= Pos(0, 0, -1) * Cylinder_(k["ri"], S.JUG_H + 2)
-    body -= Pos(*k["pin"], z2 - 1) * Cylinder_(S.SCREW_CLR / 2, S.CART_H + 2)
+    # The slot for the upper half of the spine: SPINE_CLR at each wall and at each end.
+    hu = S.SPINE_L / 2 + S.SPINE_CLR
+    slot = box(S.BLADE_D - S.SPINE_D - S.SPINE_CLR, S.BLADE_D + S.SPINE_CLR, -hu, hu, -1, S.SPINE_T / 2 + 0.2)
+    body -= blade_frame(k, slot)
+    for x, y in (blade_hole_xy(k), k["pin"]):
+        body -= Pos(x, y, z2 - 1) * Cylinder_(S.SCREW_CLR / 2, S.CART_H + 2)
     # The turn arrow on the top: the near side of the jug moves this way (-Y).
     x = k["ri"] + 5.5
     tip = (x, -9.0)
@@ -333,19 +344,36 @@ def cart_clamp():
 
 
 def insert():
-    """The M2.5 heat-set insert in the shelf, flush with the shelf top (the model only)."""
+    """The two M2.5 heat-set inserts (the model only): one in the shelf, one in the base. Both flush."""
     k = jig_x()
-    p = Pos(*k["pin"], k["top"] - S.INSERT_L)
-    return p * Cylinder_(S.INSERT_OD / 2, S.INSERT_L) - p * Pos(0, 0, -1) * Cylinder_(S.SCREW_D / 2 - 0.2, S.INSERT_L + 2)   # the thread core
+    out = None
+    for (x, y), z in ((k["pin"], k["top"]), (blade_hole_xy(k), S.CUT_H - S.BLADE_T / 2)):
+        p = Pos(x, y, z - S.INSERT_L)
+        part = p * Cylinder_(S.INSERT_OD / 2, S.INSERT_L) - p * Pos(0, 0, -1) * Cylinder_(S.SCREW_D / 2 - 0.2, S.INSERT_L + 2)
+        out = part if out is None else out + part
+    return out
 
 
-def screw():
-    """The M2.5 lock screw, in its hole: through the cartridge and into the shelf (the model only)."""
+def screw_base():
+    """The lock screw: through both plates into the insert in the shelf (the model only)."""
     k = jig_x()
     zt = k["top"] + S.CART_H
     px, py = k["pin"]
     sc = Pos(px, py, zt - S.SCREW_L) * Cylinder_(S.SCREW_D / 2, S.SCREW_L + 0.01)
     return sc + Pos(px, py, zt) * Cylinder_(S.SCREW_HEAD_D / 2, S.SCREW_HEAD_H)
+
+
+def screw_blade():
+    """The cap screw: through the clamp plate and the blade hole into the insert in the base."""
+    k = jig_x()
+    zt = k["top"] + S.CART_H
+    px, py = blade_hole_xy(k)
+    sc = Pos(px, py, zt - S.BLADE_SCREW_L) * Cylinder_(S.SCREW_D / 2, S.BLADE_SCREW_L + 0.01)
+    return sc + Pos(px, py, zt) * Cylinder_(S.SCREW_HEAD_D / 2, S.SCREW_HEAD_H)
+
+
+def screw():
+    return screw_base() + screw_blade()
 
 
 def blade(gap=0.0):

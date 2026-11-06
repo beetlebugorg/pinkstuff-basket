@@ -78,7 +78,7 @@ N_SETS = 1
 
 PRINTS = [
     ("jig", "White", 1, "Upside down, the ring top on the bed. Print it once for all the jugs."),
-    ("jig_cart", "White", 1, "On its back end (the flat end) on the bed."),
+    ("jig_cart", "White", 1, "Upside down, the flat top face on the bed. The cheeks point up."),
     ("jig_clamp", "White", 1, "Upside down, the top face with the arrow on the bed."),
     ("fit_arc", "White", 1, "Top face on the bed. Print this first. It tests the groove and the diameter on the jug."),
     ("collar", "White", N_SETS, "Top face on the bed (upside down). The groove opens to the top."),
@@ -104,39 +104,41 @@ SETTINGS = [
     ("Supports", "Off. A slice with supports on (60°, everywhere) adds 0 g of support to each part."),
     ("Tools", "One single-edge razor blade with a folded steel spine (1.5 in long, 11/16 to 3/4 in wide, 0.010 in thick; "
               "for example Personna #9 or Stanley 11-515), a flat table, and sandpaper (120 grit)."),
-    ("Hardware", "One M2.5 heat-set insert, 4 mm long, for a 3.6 mm hole (CNC Kitchen type). One M2.5 x 12 socket head "
-                 "cap screw and a 2 mm hex key. A soldering iron at 220 °C to set the insert."),
+    ("Hardware", "Two M2.5 heat-set inserts, 4 mm long, for a 3.6 mm hole (CNC Kitchen type). M2.5 socket head "
+                 "cap screws: one 12 mm long (the lock screw), one 8 mm long (the blade screw). A 2 mm hex key. "
+                 "A soldering iron at 220 °C to set the inserts."),
 ]
 
 STEPS = [
-    ("blade", "Load the blade", ["cartridge base", "clamp plate", "razor blade"], [
-        "Use a single-edge razor blade with a folded steel spine: 1.5 in long, 3/4 in wide, 0.009 in thick.",
-        "Hold the blade by the spine. Point the edge away from you.",
-        "Put the base on the table, pocket up. The pocket is a shallow channel, at an angle across the top.",
-        "Put the spine down into the pocket. The edge points to the curved front end. The blade lies flat.",
-        "Push the blade forward until the front edge of the spine touches the front wall of the pocket. The ends "
-        "of the spine fit between the ends of the pocket.",
-        "Look down the screw hole. The hole must be clear behind the spine.",
-        "Put the clamp plate on top, arrow up. Its side lips go down over the sides of the base.",
-        f"Look at the front (the curved end). The blade is at {S.YAW:.0f}°. Its tip comes out about 10 mm.",
-    ], "Keep the base and the clamp plate together with your fingers until the screw is in. "
-       "To take the blade out, remove the screw and lift off the clamp plate."),
+    ("blade", "Load the blade", ["cartridge base", "clamp plate", "razor blade", "M2.5 x 8 screw", "2 mm hex key"], [
+        "One time only: put an insert on the round hole in the middle of the base top. Push it in with the soldering "
+        "iron at 220 °C until it is flush with the top. Let it cool.",
+        "Put the base on the table, flat top up. The curved end points away from you.",
+        "Hold the blade by the spine. Lay it on the base, spine down in the V-groove, edge toward the curved end.",
+        "Move the blade until you see the insert through the hole in the blade.",
+        "Put the clamp plate on top, arrow up. The spine goes into the slot under the plate. The side lips go "
+        "down over the sides of the base. The plate sits flat only when the spine is in the slot.",
+        "Put the M2.5 x 8 screw through the front hole of the clamp plate and the blade hole into the insert. Tighten it firmly.",
+        f"Look at the curved end. The blade is at {S.YAW:.0f}° and its tip comes out about 10 mm. The edge is now covered "
+        "except at the curved end.",
+    ], "The front hole is the blade screw. The back hole is the lock screw. It goes in when the cartridge is on the ring. "
+       "To change the blade, remove the blade screw and lift off the clamp plate. Hold the blade by the spine only."),
     ("jig", "Cut the jug", ["cutting ring", "loaded cartridge", "M2.5 x 12 screw", "2 mm hex key", "jug", "flat table"], [
         "Empty the jug. Rinse it with water and let it dry.",
-        "One time only: put the insert on the hole in the shelf. Push it in with the soldering iron at 220 °C until it is "
+        "One time only: put an insert on the hole in the shelf. Push it in with the soldering iron at 220 °C until it is "
         "flush with the shelf top. Let it cool.",
         "Stand the cutting ring on a flat table. Put the jug down into the ring from above.",
         "Put the loaded cartridge on the shelf, behind the ring, edge toward the jug. The side cheeks of the base go down "
         "beside the shelf.",
         "Push the back end of the cartridge with your thumb. The tip of the angled blade goes through the wall first.",
-        "Put the screw through the clamp plate and the base into the insert. The screw goes in just behind the spine. "
-        "Tighten it firmly. The screw squeezes the spine between the two plates, and the blade cannot move.",
+        "Put the M2.5 x 12 lock screw through the back hole into the insert in the shelf. Tighten it.",
         "Turn the jug by its handle CLOCKWISE (seen from above), one full turn. The arrow on the "
         "clamp plate shows the way the near side of the jug moves. The blade cuts a level line.",
-        "Remove the screw. Pull the cartridge back. Lift off the top half, then lift the jug out.",
+        "Remove the lock screw. Pull the cartridge back. Lift off the top half, then lift the jug out.",
         f"Sand the cut edge flat and remove the burrs. The cut is {S.CUT_H:.0f} mm above the table.",
     ], f"The blade is at {S.YAW:.0f}° to the wall, so the wall meets the sharp edge and the edge slices it. "
-       "Turn the jug the other way and the wall hits the blunt end of the blade. Take the blade out after use."),
+       "Turn the jug the other way and the wall hits the blunt end of the blade. Take the blade out after use, "
+       "or keep the loaded cartridge in a box."),
     ("part_fit_arc", "Fit test", ["fit test arc", "cut jug"], [
         "Push the groove of the fit test arc down over the cut edge.",
         "The edge must go into the groove and stop with a firm push.",
@@ -176,12 +178,12 @@ ADJUST = [
      "Turn the jug clockwise. Change YAW by 5: a larger angle goes deeper, a smaller angle slices more."),
     ("The jug does not go into the cutting ring, or it is loose in it", "RING_CLR, JUG_DIA", f"{S.RING_CLR:.1f}, {S.JUG_DIA:.1f}",
      "Check JUG_DIA (MEASURE.md, J1). Change RING_CLR by 0.2."),
-    ("The spine does not go into the pocket of the base", "SPINE_END_CLR, SPINE_FRONT_CLR", f"{S.SPINE_END_CLR:.2f}, {S.SPINE_FRONT_CLR:.2f}",
-     "Add 0.1 to SPINE_END_CLR. Reprint the base only."),
+    ("The clamp plate does not sit flat on the blade", "SPINE_CLR", f"{S.SPINE_CLR:.2f}",
+     "Add 0.1 to SPINE_CLR: the slot for the spine gets wider. Reprint the clamp plate only."),
     ("The insert is loose in the shelf, or it does not go in", "INSERT_D", f"{S.INSERT_D:.1f}",
      "Set INSERT_D to the hole size on the data sheet of your insert. Reprint the ring."),
-    ("The blade moves when the screw is tight", "SPINE_POCKET", f"{S.SPINE_POCKET:.2f}",
-     "Subtract 0.1 from SPINE_POCKET: the plates then squeeze the spine more. Reprint the base only."),
+    ("The blade moves when the screw is tight", "SPINE_CLR", f"{S.SPINE_CLR:.2f}",
+     "Subtract 0.05 from SPINE_CLR: the slot then fits the spine closer. Reprint the clamp plate only."),
     ("The edge stops at the mouth of the groove", "JUG_T, G_HALF_MOUTH", f"{S.JUG_T:.1f}, {S.G_HALF_MOUTH:.1f}",
      "Measure the wall (J2). Set JUG_T to the value. For a wall over 2.2 mm, add 0.3 to G_HALF_MOUTH."),
     ("The collar is loose on a correct jug size", "G_HALF_ROOF", f"{S.G_HALF_ROOF:.1f}",
@@ -189,7 +191,7 @@ ADJUST = [
     ("The lid is too hard to put on, or it is loose", "SNAP", f"{S.SNAP:.2f}",
      "Subtract or add 0.1. The skirt strain must stay below 1.5 % (model.py prints it)."),
     ("The basket sits too high or too low", "DEPTH, CUT_H", f"{S.DEPTH:.0f}, {S.CUT_H:.0f}",
-     "Change DEPTH for a deeper or shallower basket. CUT_H is only for the brine volume and the images."),
+     "Change DEPTH for a deeper or shallower basket. The ring and the cartridge set CUT_H."),
 ]
 
 
@@ -215,7 +217,7 @@ def cover():
   circumference on a sample jug. The {S.JUG_T:.1f} mm wall is an estimate.
   Print the fit test arc first. <code>MEASURE.md</code> lists the measurements to take.</div>
   <div class="need"><div class="chip"><span class="sw" style="background:#f4f4f2;border:0.3mm solid #999"></span>White PLA</div>
-    <div class="chip">{total} g and {hours} for each jug</div><div class="chip">cutting ring {round(sum(FILAMENT[n]['grams'] for n in ('jig', 'jig_cart', 'jig_clamp')))} g, once</div><div class="chip">No supports</div><div class="chip">One M2.5 x 12 screw</div></div>
+    <div class="chip">{total} g and {hours} for each jug</div><div class="chip">cutting ring {round(sum(FILAMENT[n]['grams'] for n in ('jig', 'jig_cart', 'jig_clamp')))} g, once</div><div class="chip">No supports</div><div class="chip">Two M2.5 screws, two inserts</div></div>
   {foot(1)}
 </section>"""
 

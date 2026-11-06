@@ -28,7 +28,7 @@ JUG_DIA = 152.8      # MEASURED: 480 mm circumference at the middle / pi
 JUG_W = JUG_D = JUG_DIA  # the bounding box of the jug (for the slots and the images)
 JUG_T = 1.0          # ESTIMATE: wall thickness of the jug at the cut (HDPE)
 JUG_FLOOR = 1.5      # ESTIMATE: floor thickness of the jug (the context model only)
-CUT_H = 100.0        # the height of the cut above the bottom of the jug (your choice)
+CUT_H = 101.0        # the height of the cut above the bottom of the jug (the ring and the cartridge set it)
 
 # --- The collar: the groove over the cut edge ---
 # The groove tapers on both faces, about the centre of the jug wall. The wall wedges in where
@@ -99,10 +99,10 @@ TAB_OUT = 3.0        # the tab goes 3 mm out, at 45 deg
 
 # --- Cutting collar: a ring on three legs that holds a razor blade at CUT_H ---
 # Stand the ring on a flat table. Put the jug into the ring from above. The cartridge is two
-# plates: the base sits on the shelf, and the blade spine sits in a pocket on the base. The
-# clamp plate goes on top. The M2.5 screw goes through both plates, behind the spine, into the
-# insert in the shelf. The screw squeezes the spine between the plates. Turn the jug in the
-# ring. The ring prints upside down, the base on its back end, the clamp plate upside down.
+# plates. The base sits on the shelf. The lock screw goes through both plates into the shelf. The
+# blade lies on the base: the spine goes in a V-groove, and the blade hole is over an insert in
+# the base. The clamp plate goes on top: a slot in it fits the spine. A cap screw goes through
+# the clamp plate and the blade hole into the insert in the base. Both plates print upside down.
 # The ring is printed: its layout uses JIG_BLADE_D. Do not change the ring values.
 JUG_H = 260.0        # ESTIMATE: height of the full jug body (the context model only)
 BLADE_L = 38.86      # MEASURED: single-edge razor blade, length of the edge
@@ -115,10 +115,8 @@ BLADE_T = 0.25       # MEASURED: blade thickness
 SPINE_T = 1.0        # MEASURED: thickness of the folded steel spine
 SPINE_L = 39.65      # MEASURED: length of the spine (longer than the edge)
 SPINE_D = 6.85       # MEASURED: depth of the spine, from its back to its front edge
-SPINE_POCKET = 0.25  # the spine sits this deep in a pocket in the base. The blade face clears the base by 0.125 mm
-SPINE_END_CLR = 0.15 # gap at each end of the spine pocket: the pocket ends stop the blade along the edge
-SPINE_FRONT_CLR = 0.3  # gap from the front edge of the spine to the front wall of the pocket
-HEEL_SHORT = 0.1     # the heel of the clamp plate is 0.1 mm short: the plate presses the spine first
+SPINE_CLR = 0.15     # gap from the spine to each wall of the slot in the clamp plate: the slot sets the blade position
+GROOVE_CLR = 0.6     # the V-groove in the base is this much wider than the spine at each side (the spine goes 0.375 mm into it)
 LIP_H = 2.5          # the clamp plate has a lip at each side, down over the sides of the base
 LIP_T = 1.6
 LIP_CLR = 0.2
@@ -127,8 +125,8 @@ RING_T = 3.0         # radial wall of the ring
 RING_H = 8.0         # height of the ring; its top is CART_LOW below CUT_H
 YAW = 30.0           # the blade edge is at 30 deg to the jug wall (seen from above): the deep tip
                      # pierces the wall, then the wall crosses the edge at the middle of the blade
-CART_LOW = 4.0       # the blade is 4 mm above the bottom of the cartridge (the shelf top)
-CART_H = 8.0         # height of the cartridge: the base and the clamp plate, with the spine between them
+CART_LOW = 5.0       # the blade is 5 mm above the shelf top. The ring top is at CUT_H - CART_LOW = 96. Keep 96
+CART_H = 9.0         # height of the cartridge: the base (5 mm) and the clamp plate (4 mm), with the blade between them
 CART_W = 48.0        # width of the cartridge (the angled blade spans 43 mm)
 CART_CLR = 0.3       # gap from the cheeks of the cartridge to the shelf
 CHEEK_T = 2.4        # the cheeks go down beside the shelf and guide the cartridge
@@ -136,13 +134,14 @@ SHELF_W = 42.0       # width of the shelf
 SHELF_T = 5.0        # thickness of the shelf
 SHELF_L = 34.0       # the shelf goes to R + SHELF_L
 ARROW_W = 1.2        # the turn arrow on the cartridge: V-grooves (45 deg faces print with no support)
-SCREW_D = 2.5        # the lock screw: M2.5 x 12 socket head cap screw (2 mm hex key)
-SCREW_L = 12.0       # length under the head: 8 mm through the cartridge, 4 mm into the insert
-SCREW_HEAD_D = 4.5   # head of the screw (the model only)
+SCREW_D = 2.5        # two M2.5 socket head cap screws (2 mm hex key)
+SCREW_L = 12.0       # the lock screw, M2.5 x 12: through both plates into the insert in the shelf
+BLADE_SCREW_L = 8.0  # the blade screw, M2.5 x 8: through the clamp plate and the blade hole into the insert in the base
+SCREW_HEAD_D = 4.5   # head of the screws (the model only)
 SCREW_HEAD_H = 2.5
-SCREW_CLR = 2.9      # the hole in the cartridge: a diamond with a 2.9 mm inner circle (no support)
+SCREW_CLR = 2.9      # the screw holes in the plates
 INSERT_D = 3.6       # ESTIMATE: M2.5 heat-set insert, 4 mm long (CNC Kitchen type): hole diameter. Check the data sheet
-INSERT_L = 4.0       # length of the insert; it goes in from the shelf top, flush
+INSERT_L = 4.0       # length of the insert. One goes in the shelf top, one in the base top. Both flush
 INSERT_OD = 3.9      # outer diameter of the insert (the model only)
 LEG_W = 14.0         # three legs: a plate LEG_W wide and LEG_T thick, and a radial fin
 LEG_T = 2.4

@@ -11,12 +11,13 @@ calcium chloride pellets (for example DampRid refills). The pellets take water f
 The brine drips through the open grid of the basket floor and collects in the jug.
 
 - **Cutting ring.** A ring on three legs holds the jug centred, and holds a razor blade level
-  100 mm above the table. Two 45° braces on each leg make the ring rigid. One leg braces the
-  shelf. The blade sits in a cartridge on the shelf: a base and a clamp plate. The spine of the
-  blade sits in a pocket on the base, and the clamp plate goes on top. Push the cartridge in,
-  put the M2.5 screw through both plates into the heat-set insert in the shelf, and turn the jug
-  clockwise. The screw squeezes the spine between the plates, so the blade cannot move, and you
-  do not hold the cartridge. Each jug gets the same cut.
+  101 mm above the table. Two 45° braces on each leg make the ring rigid. One leg braces the
+  shelf. The blade sits in a cartridge: a base and a clamp plate. Load the blade on the table:
+  the spine goes in a V-groove in the base, the clamp plate goes on top, and an M2.5 x 8 screw
+  goes through the clamp plate and the hole in the blade into an insert in the base. A slot
+  under the clamp plate fits the spine, so the blade goes in one way only. Then push the loaded
+  cartridge in on the shelf, put the M2.5 x 12 lock screw through both plates into the insert
+  in the shelf, and turn the jug clockwise. Each jug gets the same cut.
   The blade is a single-edge razor blade with a folded steel spine: 38.86 mm long, 19.37 mm
   wide, 0.25 mm thick, spine 6.85 mm deep (measured). The PDF shows how to load it.
 - **Collar.** A tapered groove goes over the cut edge of the jug. The edge wedges into it.
@@ -31,8 +32,8 @@ The brine drips through the open grid of the basket floor and collects in the ju
   settings (no top or bottom skin, lines infill 2.5 mm apart, connected lines) print them as an
   open grid. Each layer is one path, with no small holes. Use these settings: a normal profile
   prints a solid floor.
-- No supports, no glue. White PLA, to match the pellets. The cutting ring needs one M2.5 heat-set
-  insert (4 mm long, 3.6 mm hole) and one M2.5 x 12 socket head screw.
+- No supports, no glue. White PLA, to match the pellets. The cutting ring needs two M2.5 heat-set
+  inserts (4 mm long, 3.6 mm hole) and two M2.5 socket head screws (12 mm and 8 mm).
 
 `pinkstuff-basket.pdf` has the parts list, the print settings, and the steps.
 
@@ -47,10 +48,10 @@ The insert hole (3.6 mm) is an **estimate**: check the data sheet of your insert
 | File | Content |
 |---|---|
 | `shape.py` | All dimensions. `ESTIMATE` marks the values that are not measured. |
-| `parts.py` | The collar, the basket, the lid, the cutting ring, the cartridge base and clamp plate, the fit test arc, and the context (the jug, the blade, the screw, the insert), in build123d. |
+| `parts.py` | The collar, the basket, the lid, the cutting ring, the cartridge base and clamp plate, the fit test arc, and the context (the jug, the blade, the screws, the inserts), in build123d. |
 | `model.py` | The fit check, then `cad/*.step`, `stl/*.stl` (print orientation), and the meshes for the images. |
 | `stl/` | `collar.stl`, `basket.stl`, `lid.stl`, `jig.stl`, `jig_cart.stl`, `jig_clamp.stl`, `fit_arc.stl`, in print orientation. |
-| `cad/` | A STEP file for each part, `desiccant-assembly.step`, and `cutting-ring-assembly.step` (with the blade, the screw, and the insert). |
+| `cad/` | A STEP file for each part, `desiccant-assembly.step`, and `cutting-ring-assembly.step` (with the blade, the screws, and the inserts). |
 | `cura/make_profiles.py` | A Cura profile for each part, the filament use, and the support check. |
 | `printdeck.yml`, `profiles/` | The Printdeck build: the parts, the TAZ Workhorse profiles, and the PDF. |
 | `lineart/render.mjs` | The line-art images. |
@@ -78,7 +79,7 @@ outside. Peel the brim off after the print.
 |---|---|---|---|---|
 | `fit_arc.stl` | 1 | top face on the bed | 2.3 g | 6 min |
 | `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 44 g | 1 h 56 min |
-| `jig_cart.stl` (cartridge base) | 1 | on its back end | 6 g | 14 min |
+| `jig_cart.stl` (cartridge base) | 1 | upside down, the flat top on the bed | 6 g | 14 min |
 | `jig_clamp.stl` (clamp plate) | 1 | upside down, the arrow on the bed | 6 g | 14 min |
 | `collar.stl` | 1 | top face on the bed (upside down) | 22 g | 35 min |
 | `basket.stl` | 1 | floor on the bed | 26 g | 38 min |

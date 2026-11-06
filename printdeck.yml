@@ -28,8 +28,9 @@ parts:
   - name: Cartridge base
     group: Tools
     description: >-
-      The base of the blade cartridge. It sits on the shelf of the cutting ring. The spine of the razor blade sits in a
-      pocket on its top, and the pocket ends stop the blade. Print it on its back end.
+      The base of the blade cartridge. It sits on the shelf of the cutting ring. The blade lies on its flat top, with
+      the spine in a V-groove. An M2.5 insert under the blade hole takes the blade screw. Print it upside down, the
+      flat top on the bed.
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
@@ -38,9 +39,9 @@ parts:
   - name: Clamp plate
     group: Tools
     description: >-
-      Goes on top of the cartridge base. The M2.5 x 12 screw goes through the clamp plate and the base, behind the
-      spine, into the heat-set insert in the shelf. The screw squeezes the spine between the two plates. Print it
-      upside down, top face on the bed.
+      Goes on top of the blade. A slot under it fits the spine. The M2.5 x 8 blade screw goes through the front hole
+      and the blade hole into the insert in the base. The M2.5 x 12 lock screw goes through the back hole and the
+      base into the insert in the shelf. Print it upside down, top face on the bed.
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
@@ -114,9 +115,9 @@ assemblies:
         explode: [0, 0, 3]
   - name: Cutting ring
     description: >-
-      The cutting ring, the cartridge base and the clamp plate on its shelf, the M2.5 heat-set insert, the M2.5 x 12
-      screw, and a single-edge razor blade (1.5 in long, 3/4 in wide, with a folded steel spine). The screw squeezes
-      the spine between the base and the clamp plate.
+      The cutting ring, the cartridge base and the clamp plate on its shelf, two M2.5 heat-set inserts, two M2.5
+      screws, and a single-edge razor blade (1.5 in long, 3/4 in wide, with a folded steel spine). The blade screw
+      goes through the hole in the blade. The lock screw holds the cartridge on the shelf.
     items:
       - part: Cutting ring
         file: build/mesh/jig.stl
@@ -129,10 +130,10 @@ assemblies:
       - part: Clamp plate
         file: build/mesh/jig_clamp.stl
         explode: [0, 0, 2]
-      - name: M2.5 heat-set insert
+      - name: M2.5 heat-set inserts (2)
         file: build/mesh/insert.stl
         color: "#c9a74a"
-      - name: M2.5 x 12 socket head screw
+      - name: M2.5 socket head screws (12 mm and 8 mm)
         file: build/mesh/screw.stl
         color: "#55595e"
         explode: [0, 0, 3]

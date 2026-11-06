@@ -126,49 +126,52 @@ def check(problems):
     for dz in (3, 6, 10, 15):
         if overlap(Pos(0, 0, dz) * lid, collar) > 0.01:
             problems.append(f"the lid touches the collar {dz} mm above its seat")
-    # The cutting collar: the ring, the two cartridge plates, the screw and the blade are clear of
-    # the jug and of each other. The plates clamp the spine. The screw and the pocket stop the blade.
-    jig, cart, clamp, pin, blade, full, ins = (P.jig(), P.cart_base(), P.cart_clamp(), P.screw(), P.blade(),
-                                               P.jug_full(), P.insert())
+    # The cutting collar: the ring, the two cartridge plates, the screws and the blade are clear of
+    # the jug and of each other. The clamp plate presses the blade. The blade screw and the slot
+    # in the clamp plate hold the blade.
+    jig, cart, clamp, blade, full, ins = P.jig(), P.cart_base(), P.cart_clamp(), P.blade(), P.jug_full(), P.insert()
+    sb, sk = P.screw_base(), P.screw_blade()
+    pin = sb + sk
     for name, a, b in (("the ring touches the jug", jig, full), ("the base touches the jug", cart, full),
                        ("the clamp plate touches the jug", clamp, full), ("the base touches the ring", cart, jig),
                        ("the clamp plate touches the ring", clamp, jig), ("the clamp plate touches the base", clamp, cart),
                        ("the blade does not fit the base", cart, blade), ("the blade does not fit the clamp plate", clamp, blade),
                        ("the blade touches the ring", blade, jig),
-                       ("the screw does not fit the base", pin, cart), ("the screw does not fit the clamp plate", pin, clamp),
-                       ("the screw touches the blade", pin, blade), ("the screw touches the ring", pin, jig),
-                       ("the insert touches the base", ins, cart)):
+                       ("the lock screw does not fit the base", sb, cart), ("the lock screw touches the blade", sb, blade),
+                       ("the lock screw does not fit the clamp plate", sb, clamp),
+                       ("the blade screw does not fit the clamp plate", sk, clamp), ("the blade screw does not fit the base", sk, cart),
+                       ("the blade screw does not go through the blade hole", sk, blade), ("the screws touch the ring", pin, jig),
+                       ("the inserts touch the blade", ins, blade), ("the inserts touch the clamp plate", ins, clamp)):
         v = overlap(a, b)
         if v > 0.01:
             problems.append(f"{name}: {v:.2f} mm3")
-    if overlap(pin, ins) < 1.0:
-        problems.append("the screw does not reach the insert")
+    if overlap(sb, ins) < 1.0 or overlap(sk, ins) < 1.0:
+        problems.append("a screw does not reach its insert")
+    tip = P.jig_x()["top"] + S.CART_H - S.BLADE_SCREW_L              # the tip of the blade screw
+    grip = S.CUT_H - S.BLADE_T / 2 - tip
+    if not 3.0 <= grip <= S.INSERT_L or tip < P.jig_x()["top"]:
+        problems.append(f"the blade screw goes {grip:.2f} mm into the insert")
     k = P.jig_x()
     uh, vh = k["uh"], k["vh"]
-    # The clamp: 0.05 mm down, the plate presses the spine, and the heel is still clear of the base.
+    # The clamp: 0.05 mm down, the plate presses the blade, and it is still clear of the base.
     down = Pos(0, 0, -0.05) * clamp
     if overlap(down, blade) < 0.1:
-        problems.append("the clamp plate does not press the spine")
+        problems.append("the clamp plate does not press the blade")
     if overlap(down, cart) > 0.01:
-        problems.append("the heel of the clamp plate touches the base before the spine")
-    if overlap(Pos(0, 0, -(S.HEEL_SHORT + 0.05)) * clamp, cart) < 0.01:
-        problems.append("the heel of the clamp plate does not reach the base")
-    gap = k["pv"] - S.SCREW_D / 2 - S.BLADE_D            # the spine back to the screw
-    if not 0.0 < gap < 0.3:
-        problems.append(f"the spine is {gap:.2f} mm from the screw")
-    if overlap(Pos(vh[0] * (gap + 0.2), vh[1] * (gap + 0.2), 0) * blade, pin) < 0.05:
-        problems.append("the screw does not stop the blade")
-    for sgn in (1, -1):
-        d = S.SPINE_END_CLR + 0.2
-        if overlap(Pos(sgn * uh[0] * d, sgn * uh[1] * d, 0) * blade, cart) < 0.05:
-            problems.append("the pocket does not stop the blade along the edge")
-    if overlap(Pos(1.5, 0, 0) * cart, pin) < 0.1:
-        problems.append("the screw does not stop the base")
+        problems.append("the clamp plate touches the base before the blade")
+    # The blade cannot move: 0.3 mm in each direction along and across the edge hits a stop.
+    for name, d in (("forward", (-vh[0], -vh[1])), ("back", vh), ("along the edge", uh), ("along the edge", (-uh[0], -uh[1]))):
+        moved = Pos(d[0] * 0.3, d[1] * 0.3, 0) * blade
+        if overlap(moved, clamp) + overlap(moved, sk) < 0.002:
+            problems.append(f"nothing stops the blade {name}")
+    if overlap(Pos(1.5, 0, 0) * cart, sb) < 0.1:
+        problems.append("the lock screw does not stop the base")
     for dx in (3, 6, 9, 12, 15):
         if overlap(Pos(dx, 0, 0) * cart, jig) > 0.01:
             problems.append(f"the base does not slide out: contact at {dx} mm")
     if overlap(Pos(0, 0, 10) * clamp, cart) > 0.01:
         problems.append("the clamp plate does not lift off")
+    gap = S.SPINE_CLR
     if overlap(Pos(13, 0, 0) * blade, full) > 0.01:
         problems.append("the blade does not clear the jug when the base is pulled back 13 mm")
     # The edge must cross both faces of the jug wall, 2 mm or more from the blade ends, with the
@@ -209,7 +212,7 @@ def main():
     log(f"  basket: {vol:.2f} L of pellets; brine space below it {res:.2f} L; the floor and the lid plate print as an "
         f"open grid ({S.GRID_PITCH} mm pitch)")
     log(f"  cutting ring: the edge at {S.YAW:.0f} deg cuts through the wall {info['blade_margin']:.1f} mm or more "
-        f"from the blade ends (jug off centre), at Z = {S.CUT_H:.0f} mm. The plates clamp the spine")
+        f"from the blade ends (jug off centre), at Z = {S.CUT_H:.0f} mm. The blade screw goes through the blade hole")
     if "--no-export" in sys.argv:
         log("RESULT: " + ("CLASHES" if problems else "OK"))
         return
@@ -227,7 +230,7 @@ def main():
         manifest.append({"name": name, "file": name + ".stl", "material": mat, "group": group})
 
     printed = {"collar": (collar, True), "basket": (basket, False), "lid": (lid, True),
-               "fit_arc": (P.fit_arc(), True), "jig": (jig, True), "jig_cart": (cart, "end"), "jig_clamp": (clamp, True)}
+               "fit_arc": (P.fit_arc(), True), "jig": (jig, True), "jig_cart": (cart, True), "jig_clamp": (clamp, True)}
     for name, (shape, flip) in printed.items():
         export_step(shape, os.path.join(HERE, "cad", name + ".step"))
         pose = print_pose(shape, flip)
