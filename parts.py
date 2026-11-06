@@ -5,7 +5,7 @@ A horizontal size is an offset o from the outer face of the jug (see shape.py)."
 import math
 
 from build123d import (Align, Axis, Box, Circle, Plane, Polygon, Pos, Rectangle, Rot, Sketch, SlotOverall,
-                       extrude, loft)
+                       extrude, loft, revolve)
 
 import shape as S
 
@@ -155,11 +155,13 @@ def lid():
     h = S.LID_IN - S.BEAD_APEX
     bead = slab(S.LID_IN + 0.01, S.SNAP_Z - h, S.SNAP_Z + h) - v_ring(S.LID_IN, S.BEAD_APEX, S.SNAP_Z)
     body += bead
-    # The pull tab at +Y: a 45 deg wedge at the bottom of the skirt.
-    y0 = S.JUG_D / 2 + S.LID_O - 0.2
+    # The pull tab at +Y: a 45 deg wedge at the bottom of the skirt. It follows the curve of
+    # the skirt, so the full length of the tab bonds to the skirt.
+    r0 = S.JUG_DIA / 2 + S.LID_O - 0.2
     z0 = S.LID_SKIRT_Z0
-    wedge = Polygon((y0, z0), (y0 + S.TAB_OUT + 0.2, z0), (y0, z0 + S.TAB_OUT + 0.2), align=None)
-    body += extrude(Plane.YZ * wedge, S.TAB_W / 2, both=True)
+    wedge = Polygon((r0, z0), (r0 + S.TAB_OUT + 0.2, z0), (r0, z0 + S.TAB_OUT + 0.2), align=None)
+    span = math.degrees(S.TAB_W / r0)
+    body += Rot(0, 0, 90 - span / 2) * revolve(Plane.XZ * wedge, Axis.Z, span)
     # Slits in the skirt, open at its bottom edge, between the tab and the next finger.
     # The slits go from 1 mm inside the bead to outside the skirt.
     r0 = S.JUG_DIA / 2 + S.BEAD_APEX - 1

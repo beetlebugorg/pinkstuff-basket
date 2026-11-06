@@ -70,19 +70,20 @@ The script stops if the fit check, the mesh check, or the support check fails. I
 
 The print times and the filament come from the Printdeck slice (`printdeck_slice.py`): the
 Printdeck slicer with the TAZ Workhorse SE profile `pla-0.30-fast`, faster speeds, and white
-PLA (`roll-5`). The values are for one part.
+PLA (`roll-5`). The values are for one part. All parts print with a 10-line brim on the
+outside. Peel the brim off after the print.
 
 | Part | Count | Orientation | Filament | Time |
 |---|---|---|---|---|
-| `fit_arc.stl` | 1 | top face on the bed | 2.2 g | 6 min |
-| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 44 g | 2 h 09 min |
-| `jig_cart.stl` (cartridge) | 1 | on its back end | 11 g | 26 min |
-| `collar.stl` | 1 | top face on the bed (upside down) | 19 g | 33 min |
-| `basket.stl` | 1 | floor on the bed | 25 g | 45 min |
-| `lid.stl` | 1 | top face on the bed (upside down) | 13 g | 31 min |
+| `fit_arc.stl` | 1 | top face on the bed | 2.3 g | 6 min |
+| `jig.stl` (cutting ring) | 1 | upside down, the ring top on the bed | 44 g | 2 h 13 min |
+| `jig_cart.stl` (cartridge) | 1 | on its back end | 11 g | 27 min |
+| `collar.stl` | 1 | top face on the bed (upside down) | 20 g | 40 min |
+| `basket.stl` | 1 | floor on the bed | 25 g | 47 min |
+| `lid.stl` | 1 | top face on the bed (upside down) | 14 g | 33 min |
 
-One set (a collar, a basket, and a lid) is 57 g and 1 h 48 min. The tools (the cutting ring
-and the cartridge) are 54 g and 2 h 35 min, once. The `roll-5` white PLA entry is new in
+One set (a collar, a basket, and a lid) is 59 g and 2 h 00 min. The tools (the cutting ring
+and the cartridge) are 55 g and 2 h 40 min, once. The `roll-5` white PLA entry is new in
 `profiles/taz-workhorse-se/cura.json`. It copies the black MatterHackers PLA settings.
 
 ## Desiccant

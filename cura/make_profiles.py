@@ -94,8 +94,9 @@ FLAT = {
     "speed_wall_0": 25,
     "speed_topbottom": 30,
     "cool_min_layer_time": 10,
-    "adhesion_type": "skirt",
-    "skirt_line_count": 3,
+    "adhesion_type": "brim",         # a brim on all parts: the large thin parts stay flat on the bed
+    "brim_line_count": 10,
+    "brim_location": "outside",      # no brim in the open grid or in the bores
     "xy_offset_layer_0": -0.15,
 }
 

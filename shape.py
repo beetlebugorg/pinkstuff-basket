@@ -10,10 +10,10 @@
 #   groove, so the collar grips walls from about 0.7 to 1.8 mm thick. Above the cut, a 45 deg
 #   seat holds the basket. The outer face has a ridge and a groove for the lid snap.
 # - The basket. A round box with a 45 deg flared rim. The rim sits on the seat of the
-#   collar. Slots in the floor let the brine drip out. Two ribs stiffen the floor. Side slots save filament.
+#   collar. The floor prints as an open grid, so the brine drips out. Ribs stiffen the floor.
 # - The lid. A cap with a skirt and a bead that snaps over the ridge of the collar. The plate
-#   sits on the basket rim. Narrow slots let air in and keep the pellets in. A tab at the
-#   skirt lets you pull the lid off. The lid skirt also presses the collar skirt onto the jug.
+#   sits on the basket rim. The plate prints as an open grid: air goes in, the pellets stay in.
+#   A pull tab on the skirt lets you pull the lid off. The lid skirt also presses the collar skirt onto the jug.
 #   Slits cut the lid skirt into fingers, so each finger bends over the ridge by itself.
 #
 # World coordinates (the parts in use): Z = 0 at the cut edge of the jug, Z up. The jug axis is

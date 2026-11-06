@@ -23,7 +23,7 @@ parts:
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
-    settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/jig.stl]
   - name: Blade cartridge
     group: Tools
@@ -33,7 +33,7 @@ parts:
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
-    settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 30, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/jig_cart.stl]
   - name: Fit test arc
     group: Tools
@@ -43,7 +43,7 @@ parts:
     printer: taz
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
-    settings: {wall_line_count: 3, infill_sparse_density: 40, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 3, infill_sparse_density: 40, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/fit_arc.stl]
   - name: Collar
     group: Desiccant basket
@@ -54,7 +54,7 @@ parts:
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
     count: 1
-    settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 40, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/collar.stl]
   - name: Basket
     group: Desiccant basket
@@ -64,7 +64,7 @@ parts:
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
     count: 1
-    settings: {wall_line_count: 2, infill_sparse_density: 20, infill_pattern: lines, infill_line_distance: 2.5, zig_zaggify_infill: true, top_layers: 0, bottom_layers: 0, initial_bottom_layers: 0, top_bottom_thickness: 0, roofing_layer_count: 0, flooring_layer_count: 0, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 20, infill_pattern: lines, infill_line_distance: 2.5, zig_zaggify_infill: true, top_layers: 0, bottom_layers: 0, initial_bottom_layers: 0, top_bottom_thickness: 0, roofing_layer_count: 0, flooring_layer_count: 0, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/basket.stl]
   - name: Lid
     group: Desiccant basket
@@ -76,7 +76,7 @@ parts:
     profile: taz-workhorse-se/pla-0.30-fast
     material: roll-5
     count: 1
-    settings: {wall_line_count: 2, infill_sparse_density: 20, infill_pattern: lines, infill_line_distance: 2.5, zig_zaggify_infill: true, top_layers: 0, bottom_layers: 0, initial_bottom_layers: 0, top_bottom_thickness: 0, roofing_layer_count: 0, flooring_layer_count: 0, adhesion_type: skirt, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
+    settings: {wall_line_count: 2, infill_sparse_density: 20, infill_pattern: lines, infill_line_distance: 2.5, zig_zaggify_infill: true, top_layers: 0, bottom_layers: 0, initial_bottom_layers: 0, top_bottom_thickness: 0, roofing_layer_count: 0, flooring_layer_count: 0, adhesion_type: brim, brim_line_count: 10, brim_location: outside, speed_print: 70, speed_infill: 75, speed_wall_0: 60, speed_wall_x: 70, speed_topbottom: 70, speed_roofing: 60, speed_layer_0: 30, speed_print_layer_0: 30, acceleration_wall_0: 1000, acceleration_wall_x: 1500, acceleration_topbottom: 1500, cool_min_layer_time: 5}
     files: [stl/lid.stl]
 
 docs:
